@@ -44,7 +44,7 @@ public class Simulation
 
         TorusWorld world = new TorusWorld(width, height);
 
-        start();
+        start(rounds);
 
     }
 
