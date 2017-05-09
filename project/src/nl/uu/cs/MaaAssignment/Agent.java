@@ -24,4 +24,8 @@ public class Agent
 
     }
 
+    public int getId()
+    {
+        return _id;
+    }
 }
