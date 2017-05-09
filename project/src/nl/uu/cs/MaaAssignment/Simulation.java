@@ -112,16 +112,10 @@ public class Simulation
 
     private boolean putItPosition(AgentPosition agent)
     {
-        //check if agent is not colliding with border.
-        if((agent._posX < _collisionRadius)|(agent._posY < _collisionRadius)|(_height - agent._posY < _collisionRadius)|(_width - agent._posX < _collisionRadius))
-        {
-            return false;
-        }
-
         //Check if agent is not colliding with other agent.
         for(AgentPosition otherAgent: _agents)
         {
-            if((2 * _collisionRadius) < (Math.sqrt(Math.pow(agent._posX-otherAgent._posX, 2)+ Math.pow(agent._posY-otherAgent._posY, 2))))
+            if((2 * _collisionRadius) < distanceOnTorus(agent._posX, otherAgent._posX, agent._posY, otherAgent._posY))
             {
                 return false;
             }
@@ -132,8 +126,26 @@ public class Simulation
 
     private boolean makeMove(AgentPosition agent, int action)
     {
+        double magnitude = _speed;
+        double direction = _actions.get(action);
 
+        double newX = agent._posX  + Math.cos(direction) * magnitude;
+        double newY = agent._posY  + Math.sin(direction) * magnitude;
+
+        //TODO: add modulo and test if there's no collision from the line to all circles.
         return true;
+    }
+
+    private double distanceOnTorus(double x1, double y1, double x2, double y2)
+    {
+        double dx = Math.pow(x1 - x2, 2);
+        double ix = Math.pow(_width -  Math.max(x1, x2) + Math.min(x1, x2), 2);
+
+        double dy = Math.pow(y1 - y2, 2);
+        double iy = Math.pow(_width -  Math.max(y1, y2) + Math.min(y1, y2), 2);
+
+        return Math.sqrt(Math.min(dx, ix) + Math.min(dy, iy));
+
     }
 
     //TODO: refactor agent away.

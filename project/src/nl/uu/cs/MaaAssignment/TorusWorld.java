@@ -8,6 +8,11 @@ public class TorusWorld
 
     }
 
+    public void addAgent(int id, double posX, double posY)
+    {
+
+    }
+
     public void moveAgent(int id, double posX, double posY)
     {
 
