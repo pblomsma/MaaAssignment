@@ -16,12 +16,12 @@ public class Agent
 
     public int nextAction(int round)
     {
-        return -1;
+        return _algorithm.nextAction(round);
     }
 
     public void reward(double reward, int round)
     {
-
+        _algorithm.reward(reward, round);
     }
 
     public int getId()

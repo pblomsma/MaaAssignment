@@ -51,6 +51,8 @@ public class Simulation
         _width = width;
         _height = height;
 
+        _world = new TorusWorld(width, height);
+
         //Create actions
         double angle = 360.0 / (double) numberOfActions;
 
@@ -79,11 +81,11 @@ public class Simulation
                 agentPosition._posX = randomGenerator.nextDouble() * _width;
                 agentPosition._posY = randomGenerator.nextDouble() * _height;
             }
-            while (!putItPosition(agentPosition));
+            while (!putOnPosition(agentPosition));
             _agents.add(agentPosition);
         }
 
-        _world = new TorusWorld(width, height);
+
 
         start();
 
@@ -110,7 +112,7 @@ public class Simulation
     }
 
 
-    private boolean putItPosition(AgentPosition agent)
+    private boolean putOnPosition(AgentPosition agent)
     {
         //Check if agent is not colliding with other agent.
         for(AgentPosition otherAgent: _agents)
