@@ -15,6 +15,15 @@ import java.util.Random;
 public class Simulation
 {
 
+    //TODO : ADD REINFORCEMENT LEARNING ALGORITHMS!!!!
+
+    //TODO : Peter's class desu
+
+    //TODO : Main loop -> Ask every agent what they plan to do, in random order try to execute those movements and give
+    //TODO : rewards accordingly.
+
+    //TODO : Track mean rewards per action per time step
+
     private final List<Double> _actions;
     private final HashMap<Integer, MALAgentPosition> _agentPositions;
 
@@ -141,7 +150,6 @@ public class Simulation
         double yVelocity = Math.sin(direction) * magnitude;
 
         return _world.moveAgent(agent.get_MAL_agent().getId(), xVelocity, yVelocity);
-
 
         //double newX = agent.get_posX()  + Math.cos(direction) * magnitude;
         //double newY = agent.get_posY()  + Math.sin(direction) * magnitude;

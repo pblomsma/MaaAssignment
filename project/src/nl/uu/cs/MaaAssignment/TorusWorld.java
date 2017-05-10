@@ -6,6 +6,13 @@ import java.util.HashMap;
 
 public class TorusWorld
 {
+
+    // TODO ; - Dustin's Class desu
+    // TODO : Visualization of World and Plot Mean reward of Action per Time Step
+    // TODO : Requires connection to simulation for information, Observer Pattern?
+    // TODO : Improve collision to consider movement over lines
+
+
     private double _width;
     private double _height;
     private double _radius;
