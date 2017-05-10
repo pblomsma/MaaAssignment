@@ -4,6 +4,7 @@ import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +16,8 @@ public class Simulation
 {
 
     private final List<Double> _actions;
-    private final List<AgentPosition> _agents;
+    //private final List<MALAgentPosition> _agentPositions;
+    private final HashMap<Integer, MALAgentPosition> _agentPositions;
 
     private final double _speed;
     private final double _collisionRadius;
@@ -64,78 +66,88 @@ public class Simulation
 
         Random randomGenerator = new Random();
 
-
-        _agents = new ArrayList<AgentPosition>();
+        _agentPositions = new HashMap<Integer, MALAgentPosition>();
         for(int i = 0; i < numberOfAgents; i++)
         {
             //TODO: init right algorithm type.
             Algorithm algorithm = new TestAlgorithm();
             algorithm.initialize(_actions, algorithmParams);
-            Agent agent = new Agent(algorithm, i);
+            MALAgent MALAgent = new MALAgent(algorithm, i, _collisionRadius);
 
-            AgentPosition agentPosition = new AgentPosition();
-            agentPosition._agent = agent;
+            MALAgentPosition MALAgentPosition = new MALAgentPosition(MALAgent);
+            double posX, posY = Double.NEGATIVE_INFINITY;
 
             do
             {
-                agentPosition._posX = randomGenerator.nextDouble() * _width;
-                agentPosition._posY = randomGenerator.nextDouble() * _height;
+                posX = randomGenerator.nextDouble() * _width;
+                posY = randomGenerator.nextDouble() * _height;
             }
-            while (!putOnPosition(agentPosition));
-            _agents.add(agentPosition);
+            while (!putOnPosition(MALAgentPosition));
+            MALAgentPosition.setPosition(posX, posY);
+            _agentPositions.put(i, MALAgentPosition);
         }
 
-
-
         start();
-
     }
 
     private void start()
     {
         for(int round = 0; round < _rounds; round++)
         {
-            for(AgentPosition agent: _agents)
+            for(MALAgentPosition agentPosition: _agentPositions.values())
             {
-                int action = agent._agent.nextAction(round);
+                MALAgent currentAgent = agentPosition.get_MAL_agent();
+                int action = currentAgent.nextAction(round);
 
-                if(makeMove(agent, action))
+                if(simulationStep(agentPosition, action))
                 {
-                    agent._agent.reward(_reward1, round);
+                    currentAgent.reward(_reward1, round);
                 }
                 else
                 {
-                    agent._agent.reward(_reward2, round);
+                    currentAgent.reward(_reward2, round);
                 }
             }
         }
     }
 
 
-    private boolean putOnPosition(AgentPosition agent)
+    private boolean putOnPosition(MALAgentPosition agentPosition)
     {
         //Check if agent is not colliding with other agent.
-        for(AgentPosition otherAgent: _agents)
+        for(MALAgentPosition otherAgent: _agentPositions.values())
         {
-            if((2 * _collisionRadius) < distanceOnTorus(agent._posX, otherAgent._posX, agent._posY, otherAgent._posY))
+            if((2 * _collisionRadius) < distanceOnTorus(agentPosition.get_posX(), otherAgent.get_posX(), agentPosition.get_posY(), otherAgent.get_posY()))
             {
                 return false;
             }
         }
-        _world.addAgent(agent._agent.getId(), agent._posX, agent._posY);
+
+        // Not sure what the intention was
+        //_world.addAgent(agentPosition._MAL_agent.getId(), agentPosition._posX, agentPosition._posY);
+        // _world.teleportAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_MAL_agent(), agentPosition.get_posX(), agentPosition.get_posY());
+
+        // Assuming that this should just teleport the agent to proposed location
+        _world.teleportAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_posX(), agentPosition.get_posY());
         return true;
     }
 
-    private boolean makeMove(AgentPosition agent, int action)
+    private boolean simulationStep(MALAgentPosition agent, int action)
     {
         double magnitude = _speed;
         double direction = _actions.get(action);
 
-        double newX = agent._posX  + Math.cos(direction) * magnitude;
-        double newY = agent._posY  + Math.sin(direction) * magnitude;
+        double xVelocity = Math.cos(direction) * magnitude;
+        double yVelocity = Math.sin(direction) * magnitude;
+
+        return _world.moveAgent(agent.get_MAL_agent().getId(), xVelocity, yVelocity);
+
+
+        //double newX = agent.get_posX()  + Math.cos(direction) * magnitude;
+        //double newY = agent.get_posY()  + Math.sin(direction) * magnitude;
 
         //TODO: add modulo and test if there's no collision from the line to all circles.
-        return true;
+        //return true;
     }
 
     private double distanceOnTorus(double x1, double y1, double x2, double y2)
@@ -150,22 +162,29 @@ public class Simulation
 
     }
 
-    //TODO: refactor agent away.
-    class AgentPosition
-    {
-        Agent _agent;
-        double _posX;
-        double _posY;
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if(obj instanceof  AgentPosition)
-            {
-                return ((AgentPosition)obj)._agent.getId() == _agent.getId();
-            }
-            return super.equals(obj);
-        }
-    }
+//    //TODO: refactor agent away.
+//    class MALAgentPosition
+//    {
+//        MALAgent _MAL_agent;
+//        double _posX;
+//        double _posY;
+//
+//        public MALAgentPosition(MALAgent agent, double posX, double posY)
+//        {
+//            this._MAL_agent = agent;
+//            this._posX = posX;
+//            this._posY = posY;
+//        }
+//
+//        @Override
+//        public boolean equals(Object obj)
+//        {
+//            if(obj instanceof MALAgentPosition)
+//            {
+//                return ((MALAgentPosition)obj)._MAL_agent.getId() == _MAL_agent.getId();
+//            }
+//            return super.equals(obj);
+//        }
+//    }
 
 }

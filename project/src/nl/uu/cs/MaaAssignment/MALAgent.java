@@ -2,16 +2,18 @@ package nl.uu.cs.MaaAssignment;
 
 import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 
-public class Agent
+public class MALAgent
 {
     private Algorithm _algorithm;
     private int _id;
 
+    private double _radius;
 
-    public Agent(Algorithm algorithm, int id)
+    public MALAgent(Algorithm algorithm, int id, double radius)
     {
         _algorithm = algorithm;
         _id = id;
+        _radius = radius;
     }
 
     public int nextAction(int round)
@@ -27,5 +29,9 @@ public class Agent
     public int getId()
     {
         return _id;
+    }
+
+    public double getRadius() {
+        return _radius;
     }
 }
