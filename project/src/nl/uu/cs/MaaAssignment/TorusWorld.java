@@ -6,22 +6,28 @@ import java.util.HashMap;
 
 public class TorusWorld
 {
-    private double width;
-    private double height;
+    private double _width;
+    private double _height;
+    private double _radius;
 
     private HashMap<Integer, MALAgentPosition> MALAgents;
 
-    public TorusWorld(double width, double height)
+    public TorusWorld(double _width, double _height, double _radius)
     {
-        this.width = width;
-        this.height = height;
+        this._width = _width;
+        this._height = _height;
+        this._radius = _radius;
 
         this.MALAgents = new HashMap<Integer, MALAgentPosition>();
     }
 
-    public void addAgent(int id, MALAgent agent, double posX, double posY)
+    public boolean addAgent(int id, MALAgent agent, double posX, double posY)
     {
-        this.MALAgents.put(id, new MALAgentPosition(agent, posX, posY));
+        if(!collisionCheckPosition(posX, posY, this._radius)) {
+            this.MALAgents.put(id, new MALAgentPosition(agent, posX, posY));
+            return true;
+        }
+        return false;
     }
 
     public void teleportAgent(int id, double posX, double posY)
@@ -52,20 +58,22 @@ public class TorusWorld
 
         for (MALAgentPosition position: MALAgents.values()) {
             // Check collision by seeing if radii summed is smaller than the euclidean distance
-            if (euclideanDistance(xPos, position.get_posX(), yPos, position.get_posY()) >= collisionDistance)
+            if (distanceOnTorus(xPos, yPos, position.get_posX(), position.get_posY()) >= collisionDistance)
                 collision = true;
         }
         return collision;
     }
 
-    public double euclideanDistance(Vec2d pos1, Vec2d pos2)
+    private double distanceOnTorus(double x1, double y1, double x2, double y2)
     {
-        return Math.sqrt(Math.pow((pos1.x - pos2.x), 2) + Math.pow((pos1.y - pos2.y), 2 ));
-    }
+        double dx = Math.pow(x1 - x2, 2);
+        double ix = Math.pow(_width -  Math.max(x1, x2) + Math.min(x1, x2), 2);
 
-    public double euclideanDistance(double pos1X, double pos2X, double pos1Y, double pos2Y)
-    {
-        return Math.sqrt(Math.pow((pos1X - pos2X), 2) + Math.pow((pos1Y - pos2Y), 2 ));
+        double dy = Math.pow(y1 - y2, 2);
+        double iy = Math.pow(_width -  Math.max(y1, y2) + Math.min(y1, y2), 2);
+
+        return Math.sqrt(Math.min(dx, ix) + Math.min(dy, iy));
+
     }
 
     private Vec2d getNewPosition(double xPos, double yPos, double xVelocity, double yVelocity)
@@ -76,16 +84,26 @@ public class TorusWorld
         Vec2d toReturn = new Vec2d();
 
         if(newX < 0)
-            toReturn.x = newX + width;
-        if(newX > width)
-            toReturn.x = newX - width;
+            toReturn.x = newX + _width;
+        if(newX > _width)
+            toReturn.x = newX - _width;
 
         if(newY < 0)
-            toReturn.y = newX + height;
-        if(newY > width)
-            toReturn.y = newX - height;
+            toReturn.y = newX + _height;
+        if(newY > _width)
+            toReturn.y = newX - _height;
 
         return toReturn;
     }
+
+//    public double euclideanDistance(Vec2d pos1, Vec2d pos2)
+//    {
+//        return Math.sqrt(Math.pow((pos1.x - pos2.x), 2) + Math.pow((pos1.y - pos2.y), 2 ));
+//    }
+//
+//    public double euclideanDistance(double pos1X, double pos2X, double pos1Y, double pos2Y)
+//    {
+//        return Math.sqrt(Math.pow((pos1X - pos2X), 2) + Math.pow((pos1Y - pos2Y), 2 ));
+//    }
 
 }

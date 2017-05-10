@@ -16,7 +16,6 @@ public class Simulation
 {
 
     private final List<Double> _actions;
-    //private final List<MALAgentPosition> _agentPositions;
     private final HashMap<Integer, MALAgentPosition> _agentPositions;
 
     private final double _speed;
@@ -53,7 +52,7 @@ public class Simulation
         _width = width;
         _height = height;
 
-        _world = new TorusWorld(width, height);
+        _world = new TorusWorld(width, height, collisionRadius);
 
         //Create actions
         double angle = 360.0 / (double) numberOfActions;
@@ -114,22 +113,23 @@ public class Simulation
 
     private boolean putOnPosition(MALAgentPosition agentPosition)
     {
-        //Check if agent is not colliding with other agent.
-        for(MALAgentPosition otherAgent: _agentPositions.values())
-        {
-            if((2 * _collisionRadius) < distanceOnTorus(agentPosition.get_posX(), otherAgent.get_posX(), agentPosition.get_posY(), otherAgent.get_posY()))
-            {
-                return false;
-            }
-        }
-
-        // Not sure what the intention was
-        //_world.addAgent(agentPosition._MAL_agent.getId(), agentPosition._posX, agentPosition._posY);
-        // _world.teleportAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_MAL_agent(), agentPosition.get_posX(), agentPosition.get_posY());
-
-        // Assuming that this should just teleport the agent to proposed location
-        _world.teleportAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_posX(), agentPosition.get_posY());
-        return true;
+//
+//        //Check if agent is not colliding with other agent.
+//        for(MALAgentPosition otherAgent: _agentPositions.values())
+//        {
+//            if((2 * _collisionRadius) < distanceOnTorus(agentPosition.get_posX(), otherAgent.get_posX(), agentPosition.get_posY(), otherAgent.get_posY()))
+//            {
+//                return false;
+//            }
+//        }
+//
+//        // Not sure what the intention was
+//        //_world.addAgent(agentPosition._MAL_agent.getId(), agentPosition._posX, agentPosition._posY);
+//        // _world.teleportAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_MAL_agent(), agentPosition.get_posX(), agentPosition.get_posY());
+//
+//        // Assuming that this should just teleport the agent to proposed location
+//        _world.teleportAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_posX(), agentPosition.get_posY());
+        return _world.addAgent(agentPosition.get_MAL_agent().getId(), agentPosition.get_MAL_agent(), agentPosition.get_posX(), agentPosition.get_posY());
     }
 
     private boolean simulationStep(MALAgentPosition agent, int action)
@@ -148,18 +148,6 @@ public class Simulation
 
         //TODO: add modulo and test if there's no collision from the line to all circles.
         //return true;
-    }
-
-    private double distanceOnTorus(double x1, double y1, double x2, double y2)
-    {
-        double dx = Math.pow(x1 - x2, 2);
-        double ix = Math.pow(_width -  Math.max(x1, x2) + Math.min(x1, x2), 2);
-
-        double dy = Math.pow(y1 - y2, 2);
-        double iy = Math.pow(_width -  Math.max(y1, y2) + Math.min(y1, y2), 2);
-
-        return Math.sqrt(Math.min(dx, ix) + Math.min(dy, iy));
-
     }
 
 //    //TODO: refactor agent away.
