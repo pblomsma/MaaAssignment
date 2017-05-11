@@ -16,8 +16,6 @@ public class Simulation
 
     //TODO : Peter's class desu
 
-    //TODO : Track mean rewards per action per time step
-
     private final List<Double> _actions;
     private final Map<Integer, Agent> _agents;
 
@@ -95,7 +93,7 @@ public class Simulation
 
     private void start()
     {
-        Statistics statistics = new Statistics();
+        Statistics statistics = new Statistics(_actions, _agents.size());
 
         for(int round = 0; round < _rounds; round++)
         {
