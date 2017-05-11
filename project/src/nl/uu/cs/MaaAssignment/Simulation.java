@@ -9,13 +9,9 @@ import java.util.*;
  * Created by Peter on 9-5-2017.
  */
 
-public class Simulation
-{
+public class Simulation {
 
     //TODO : ADD REINFORCEMENT LEARNING ALGORITHMS!!!!
-
-    //TODO : Peter's class desu
-
     private final List<Double> _actions;
     private final Map<Integer, Agent> _agents;
 
@@ -31,16 +27,12 @@ public class Simulation
 
     private final TorusWorld _world;
 
-    public static void main(String[] args)
-    {
-        //TODO: parse args to initialize simulation.
-        // Maybe we can use a config file to setup an environment with multiple algorithms.
-
-        new Simulation(10,10,4,100,100,1,10,100,100, 1, null);
+    public static void main(String[] args) {
+        new Simulation(Integer.parseInt(args[0]),
+                Integer.parseInt(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), Double.parseDouble(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]), Arrays.copyOfRange(args, 10, args.length));
     }
 
-    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams)
-    {
+    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
 
         _reward1 = reward1;
         _reward2 = reward2;
@@ -58,8 +50,7 @@ public class Simulation
         double angle = 360.0 / (double) numberOfActions;
 
         _actions = new ArrayList<Double>();
-        for(int i  = 0; i < numberOfActions; i++)
-        {
+        for (int i = 0; i < numberOfActions; i++) {
             _actions.add(i * angle);
         }
 
@@ -67,14 +58,12 @@ public class Simulation
 
         _agents = new HashMap<Integer, Agent>();
 
-        for(int i = 0; i < numberOfAgents; i++)
-        {
-            Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions, algorithmParams), i,_collisionRadius);
+        for (int i = 0; i < numberOfAgents; i++) {
+            Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions, algorithmParams), i, _collisionRadius);
 
             double posX, posY;
 
-            do
-            {
+            do {
                 posX = randomGenerator.nextDouble() * _width;
                 posY = randomGenerator.nextDouble() * _height;
             }
@@ -82,25 +71,22 @@ public class Simulation
 
             agent.setPosition(posX, posY);
 
-             _agents.put(i, agent);
+            _agents.put(i, agent);
         }
 
         start();
     }
 
-    private void start()
-    {
+    private void start() {
         Statistics statistics = new Statistics(_actions, _agents.size());
 
-        for(int round = 0; round < _rounds; round++)
-        {
+        for (int round = 0; round < _rounds; round++) {
             statistics.startRound(round);
 
             Map<Integer, Integer> decisions = new HashMap<Integer, Integer>();
 
             //Yield decisions
-            for (Agent agent : _agents.values())
-            {
+            for (Agent agent : _agents.values()) {
                 decisions.put(agent.getId(), agent.nextAction(round));
             }
 
@@ -125,13 +111,11 @@ public class Simulation
     }
 
 
-    private boolean putOnPosition(Agent agent)
-    {
+    private boolean putOnPosition(Agent agent) {
         return _world.addAgent(agent.getId(), agent, agent.get_posX(), agent.get_posY());
     }
 
-    private boolean simulationStep(Agent agent, int action)
-    {
+    private boolean simulationStep(Agent agent, int action) {
         double magnitude = _speed;
         double direction = _actions.get(action);
 
@@ -147,10 +131,8 @@ public class Simulation
         //return true;
     }
 
-    private Algorithm getAlgorithm(int identifier)
-    {
-        switch(identifier)
-        {
+    private Algorithm getAlgorithm(int identifier) {
+        switch (identifier) {
             default:
                 return new TestAlgorithm();
         }
