@@ -22,7 +22,7 @@ public class Simulation
     //TODO : Track mean rewards per action per time step
 
     private final List<Double> _actions;
-    private final Map<Integer, MALAgentPosition> _agentPositions;
+    private final Map<Integer, Agent> _agents;
 
     private final double _speed;
     private final double _collisionRadius;
@@ -70,16 +70,15 @@ public class Simulation
 
         Random randomGenerator = new Random();
 
-        _agentPositions = new HashMap<Integer, MALAgentPosition>();
+        _agents = new HashMap<Integer, Agent>();
 
         for(int i = 0; i < numberOfAgents; i++)
         {
             //TODO: init right algorithm type.
             Algorithm algorithm = new TestAlgorithm();
             algorithm.initialize(_actions, algorithmParams);
-            MALAgent malAgent = new MALAgent(algorithm, i);
+            Agent agent = new Agent(algorithm, i,_collisionRadius);
 
-            MALAgentPosition agentPosition = new MALAgentPosition(malAgent);
             double posX, posY;
 
             do
@@ -87,11 +86,11 @@ public class Simulation
                 posX = randomGenerator.nextDouble() * _width;
                 posY = randomGenerator.nextDouble() * _height;
             }
-            while (!putOnPosition(agentPosition));
+            while (!putOnPosition(agent));
 
-            agentPosition.setPosition(posX, posY);
+            agent.setPosition(posX, posY);
 
-             _agentPositions.put(i, agentPosition);
+             _agents.put(i, agent);
         }
 
         start();
@@ -103,10 +102,9 @@ public class Simulation
             Map<Integer, Integer> decisions = new HashMap<Integer, Integer>();
 
             //Yield decisions
-            for (MALAgentPosition agentPosition : _agentPositions.values()) {
-                MALAgent currentAgent = agentPosition.getMALAgent();
-
-                decisions.put(currentAgent.getId(), currentAgent.nextAction(round));
+            for (Agent agent : _agents.values())
+            {
+                decisions.put(agent.getId(), agent.nextAction(round));
             }
 
             //Play in random order
@@ -115,24 +113,24 @@ public class Simulation
             Collections.shuffle(agentIds);
 
             for (int i : agentIds) {
-                MALAgentPosition agentPosition = _agentPositions.get(i);
+                Agent agent = _agents.get(i);
 
-                if (simulationStep(agentPosition, decisions.get(i))) {
-                    agentPosition.getMALAgent().reward(_reward1, round);
+                if (simulationStep(agent, decisions.get(i))) {
+                    agent.reward(_reward1, round);
                 } else {
-                    agentPosition.getMALAgent().reward(_reward2, round);
+                    agent.reward(_reward2, round);
                 }
             }
         }
     }
 
 
-    private boolean putOnPosition(MALAgentPosition agentPosition)
+    private boolean putOnPosition(Agent agent)
     {
-        return _world.addAgent(agentPosition.getMALAgent().getId(), agentPosition.getMALAgent(), agentPosition.get_posX(), agentPosition.get_posY());
+        return _world.addAgent(agent.getId(), agent, agent.get_posX(), agent.get_posY());
     }
 
-    private boolean simulationStep(MALAgentPosition agent, int action)
+    private boolean simulationStep(Agent agent, int action)
     {
         double magnitude = _speed;
         double direction = _actions.get(action);
@@ -140,7 +138,7 @@ public class Simulation
         double xVelocity = Math.cos(direction) * magnitude;
         double yVelocity = Math.sin(direction) * magnitude;
 
-        return _world.moveAgent(agent.getMALAgent().getId(), xVelocity, yVelocity);
+        return _world.moveAgent(agent.getId(), xVelocity, yVelocity);
 
         //double newX = agent.get_posX()  + Math.cos(direction) * magnitude;
         //double newY = agent.get_posY()  + Math.sin(direction) * magnitude;

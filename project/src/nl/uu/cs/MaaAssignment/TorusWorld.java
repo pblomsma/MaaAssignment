@@ -17,7 +17,7 @@ public class TorusWorld
     private double _height;
     private double _radius;
 
-    private HashMap<Integer, MALAgentPosition> MALAgents;
+    private HashMap<Integer, Agent> MALAgents;
 
     public TorusWorld(double _width, double _height, double _radius)
     {
@@ -25,13 +25,14 @@ public class TorusWorld
         this._height = _height;
         this._radius = _radius;
 
-        this.MALAgents = new HashMap<Integer, MALAgentPosition>();
+        this.MALAgents = new HashMap<Integer, Agent>();
     }
 
-    public boolean addAgent(int id, MALAgent agent, double posX, double posY)
+    public boolean addAgent(int id, Agent agent, double posX, double posY)
     {
         if(!collisionCheckPosition(posX, posY, this._radius)) {
-            this.MALAgents.put(id, new MALAgentPosition(agent, posX, posY));
+            agent.setPosition(posX, posY);
+            this.MALAgents.put(id, agent);
             return true;
         }
         return false;
@@ -39,17 +40,17 @@ public class TorusWorld
 
     public void teleportAgent(int id, double posX, double posY)
     {
-        MALAgentPosition position = this.MALAgents.get(id);
+        Agent position = this.MALAgents.get(id);
         position.setPosition(posX, posY);
     }
 
     public boolean moveAgent(int id, double xVelocity, double yVelocity)
     {
         // Im choosing to do the collisionCheck here
-        MALAgentPosition position = this.MALAgents.get(id);
+        Agent position = this.MALAgents.get(id);
         Vec2d newPosition = getNewPosition(position.get_posX(), position.get_posY(), xVelocity, yVelocity);
 
-        if(!this.collisionCheckPosition(newPosition.x, newPosition.y, position.get_MAL_agent().getRadius()))
+        if(!this.collisionCheckPosition(newPosition.x, newPosition.y, position.getRadius()))
         {
             position.setPosition(newPosition.x, newPosition.y);
             return true;
@@ -63,7 +64,7 @@ public class TorusWorld
         // Since all radii are the same now, making the checkDistance here
         double collisionDistance = radius*2;
 
-        for (MALAgentPosition position: MALAgents.values()) {
+        for (Agent position: MALAgents.values()) {
             // Check collision by seeing if radii summed is smaller than the euclidean distance
             if (distanceOnTorus(xPos, yPos, position.get_posX(), position.get_posY()) >= collisionDistance)
                 collision = true;
