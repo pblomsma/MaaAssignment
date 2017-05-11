@@ -36,10 +36,10 @@ public class Simulation
         //TODO: parse args to initialize simulation.
         // Maybe we can use a config file to setup an environment with multiple algorithms.
 
-        new Simulation(10,10,4,100,100,1,10,100,100, "Default", null);
+        new Simulation(10,10,4,100,100,1,10,100,100, 1, null);
     }
 
-    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, String algorithmType, Object[] algorithmParams)
+    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams)
     {
 
         _reward1 = reward1;
@@ -69,10 +69,7 @@ public class Simulation
 
         for(int i = 0; i < numberOfAgents; i++)
         {
-            //TODO: init right algorithm type.
-            Algorithm algorithm = new TestAlgorithm();
-            algorithm.initialize(_actions, algorithmParams);
-            Agent agent = new Agent(algorithm, i,_collisionRadius);
+            Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions, algorithmParams), i,_collisionRadius);
 
             double posX, posY;
 
@@ -148,5 +145,14 @@ public class Simulation
 
         //TODO: add modulo and test if there's no collision from the line to all circles.
         //return true;
+    }
+
+    private Algorithm getAlgorithm(int identifier)
+    {
+        switch(identifier)
+        {
+            default:
+                return new TestAlgorithm();
+        }
     }
 }

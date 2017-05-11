@@ -13,8 +13,9 @@ public class TestAlgorithm implements Algorithm
     }
 
     @Override
-    public void initialize(List<Double> actions, Object[] parameters) {
-
+    public Algorithm initialize(List<Double> actions, Object[] parameters)
+    {
+        return this;
     }
 
     @Override
