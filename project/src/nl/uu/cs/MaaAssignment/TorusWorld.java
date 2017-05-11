@@ -71,7 +71,7 @@ public class TorusWorld
         return collision;
     }
 
-    private double distanceOnTorus(double x1, double y1, double x2, double y2)
+    double distanceOnTorus(double x1, double y1, double x2, double y2)
     {
         double dx = Math.pow(x1 - x2, 2);
         double ix = Math.pow(_width -  Math.max(x1, x2) + Math.min(x1, x2), 2);
@@ -80,7 +80,6 @@ public class TorusWorld
         double iy = Math.pow(_width -  Math.max(y1, y2) + Math.min(y1, y2), 2);
 
         return Math.sqrt(Math.min(dx, ix) + Math.min(dy, iy));
-
     }
 
     private Vec2d getNewPosition(double xPos, double yPos, double xVelocity, double yVelocity)
