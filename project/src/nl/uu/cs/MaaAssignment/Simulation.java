@@ -16,9 +16,6 @@ public class Simulation
 
     //TODO : Peter's class desu
 
-    //TODO : Main loop -> Ask every agent what they plan to do, in random order try to execute those movements and give
-    //TODO : rewards accordingly.
-
     //TODO : Track mean rewards per action per time step
 
     private final List<Double> _actions;
@@ -98,7 +95,12 @@ public class Simulation
 
     private void start()
     {
-        for(int round = 0; round < _rounds; round++) {
+        Statistics statistics = new Statistics();
+
+        for(int round = 0; round < _rounds; round++)
+        {
+            statistics.startRound(round);
+
             Map<Integer, Integer> decisions = new HashMap<Integer, Integer>();
 
             //Yield decisions
@@ -114,12 +116,15 @@ public class Simulation
 
             for (int i : agentIds) {
                 Agent agent = _agents.get(i);
-
+                double reward;
                 if (simulationStep(agent, decisions.get(i))) {
-                    agent.reward(_reward1, round);
+                    reward = _reward1;
                 } else {
-                    agent.reward(_reward2, round);
+                    reward = _reward2;
                 }
+
+                agent.reward(reward, round);
+                statistics.addReward(decisions.get(i), reward);
             }
         }
     }
