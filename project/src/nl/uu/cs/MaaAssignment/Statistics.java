@@ -1,7 +1,13 @@
-package nl.uu.cs.MaaAssignment.algorithms;
+package nl.uu.cs.MaaAssignment;
 
-/**
- * Created by Peter on 11-5-2017.
- */
-public class Statistics {
+public class Statistics
+{
+    //Responsible for accumulating input stats for plot: mean reward per action per time.
+
+    public void startRound(int i) {
+    }
+
+    public void addReward(int action, double reward)
+    {
+    }
 }

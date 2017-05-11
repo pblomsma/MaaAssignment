@@ -7,7 +7,8 @@ import com.sun.javafx.geom.Vec2d;
  */
 public class MALAgentPosition
 {
-    private MALAgent _MAL_agent;
+    private MALAgent _malAgent;
+
     private double _posX;
     private double _posY;
 
@@ -19,13 +20,13 @@ public class MALAgentPosition
 
     public MALAgentPosition(MALAgent agent, double posX, double posY)
     {
-        this._MAL_agent = agent;
-        this.setPosition(posX, posY);
+        _malAgent = agent;
+        setPosition(posX, posY);
     }
 
-    public MALAgent get_MAL_agent()
+    public MALAgent getMALAgent()
     {
-        return _MAL_agent;
+        return _malAgent;
     }
 
     public double get_posX() {
@@ -45,15 +46,5 @@ public class MALAgentPosition
     {
         this._posX = posX;
         this._posY = posY;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if(obj instanceof MALAgentPosition)
-        {
-            return ((MALAgentPosition)obj)._MAL_agent.getId() == _MAL_agent.getId();
-        }
-        return super.equals(obj);
     }
 }
