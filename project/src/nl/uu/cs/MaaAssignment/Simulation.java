@@ -2,14 +2,18 @@ package nl.uu.cs.MaaAssignment;
 
 import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
+import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
 
+import java.awt.*;
+import java.awt.geom.Dimension2D;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Peter on 9-5-2017.
  */
 
-public class Simulation {
+public class Simulation extends ASubject{
 
     //TODO : ADD REINFORCEMENT LEARNING ALGORITHMS!!!!
     private final List<Double> _actions;
@@ -58,6 +62,7 @@ public class Simulation {
 
         _agents = new HashMap<Integer, Agent>();
 
+        System.out.println("Making Agents!");
         for (int i = 0; i < numberOfAgents; i++) {
             Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions, algorithmParams), i, _collisionRadius);
 
@@ -69,18 +74,32 @@ public class Simulation {
             }
             while (!putOnPosition(agent));
 
+            System.out.println("Placing Agent " + i + " !");
             agent.setPosition(posX, posY);
 
             _agents.put(i, agent);
         }
 
+        System.out.println("Making Window!");
+        MaaAssignmentFrame windowFrame = new MaaAssignmentFrame(this);
+
+        System.out.println("Starting simulation!");
         start();
+    }
+
+    public Collection<Agent> getAgents(){
+        return _agents.values();
+    }
+
+    public Dimension getWorldSize(){
+        return new Dimension((int)_width, (int)_height);
     }
 
     private void start() {
         Statistics statistics = new Statistics(_actions, _agents.size());
 
         for (int round = 0; round < _rounds; round++) {
+            long roundStartTime = System.currentTimeMillis();
             statistics.startRound(round);
 
             Map<Integer, Integer> decisions = new HashMap<Integer, Integer>();
@@ -107,6 +126,8 @@ public class Simulation {
                 agent.reward(reward, round);
                 statistics.addReward(decisions.get(i), reward);
             }
+            super.notifyAllObservers();
+            while(System.currentTimeMillis() - roundStartTime < 1000);
         }
     }
 

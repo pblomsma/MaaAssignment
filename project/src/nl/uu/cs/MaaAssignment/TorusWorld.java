@@ -2,6 +2,8 @@ package nl.uu.cs.MaaAssignment;
 
 import com.sun.javafx.geom.Vec2d;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 
 public class TorusWorld
@@ -30,7 +32,7 @@ public class TorusWorld
 
     public boolean addAgent(int id, Agent agent, double posX, double posY)
     {
-        if(!collisionCheckPosition(posX, posY, this._radius)) {
+        if(!collisionCheckPosition(id, posX, posY, this._radius)) {
             agent.setPosition(posX, posY);
             this.MALAgents.put(id, agent);
             return true;
@@ -50,15 +52,16 @@ public class TorusWorld
         Agent position = this.MALAgents.get(id);
         Vec2d newPosition = getNewPosition(position.get_posX(), position.get_posY(), xVelocity, yVelocity);
 
-        if(!this.collisionCheckPosition(newPosition.x, newPosition.y, position.getRadius()))
+        if(!this.collisionCheckPosition(id, newPosition.x, newPosition.y, position.getRadius()))
         {
             position.setPosition(newPosition.x, newPosition.y);
+            System.out.println("Setting new position for agent " + id);
             return true;
         }
         return false;
     }
 
-    public boolean collisionCheckPosition(double xPos, double yPos, double radius)
+    public boolean collisionCheckPosition(int requestingAgent, double xPos, double yPos, double radius)
     {
         boolean collision = false;
         // Since all radii are the same now, making the checkDistance here
@@ -66,8 +69,10 @@ public class TorusWorld
 
         for (Agent position: MALAgents.values()) {
             // Check collision by seeing if radii summed is smaller than the euclidean distance
-            if (distanceOnTorus(xPos, yPos, position.get_posX(), position.get_posY()) >= collisionDistance)
+            if (position.getId() != requestingAgent && distanceOnTorus(xPos, yPos, position.get_posX(), position.get_posY()) <= collisionDistance) {
                 collision = true;
+                System.out.println("There is a collision!");
+            }
         }
         return collision;
     }
@@ -92,13 +97,17 @@ public class TorusWorld
 
         if(newX < 0)
             toReturn.x = newX + _width;
-        if(newX > _width)
+        else if(newX > _width)
             toReturn.x = newX - _width;
+        else
+            toReturn.x = newX;
 
         if(newY < 0)
             toReturn.y = newX + _height;
         if(newY > _width)
             toReturn.y = newX - _height;
+        else
+            toReturn.y = newY;
 
         return toReturn;
     }
