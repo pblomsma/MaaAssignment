@@ -96,7 +96,7 @@ public class Simulation extends ASubject{
     }
 
     private void start() {
-        Statistics statistics = new Statistics(_actions, _agents.size());
+        StatisticsAggregator statistics = new StatisticsAggregator(_actions, _agents.size());
 
         for (int round = 0; round < _rounds; round++) {
             long roundStartTime = System.currentTimeMillis();

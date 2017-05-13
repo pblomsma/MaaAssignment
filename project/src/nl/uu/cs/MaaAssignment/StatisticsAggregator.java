@@ -14,7 +14,7 @@ public class StatisticsAggregator
 
     private final List<Double> _actions;
     private List<Double>[] _rewards;
-    private int round = -1;
+    private int _round = -1;
     private final int _agentCount;
     private final List<Processor> _processors;
 
@@ -32,11 +32,11 @@ public class StatisticsAggregator
 
     public void startRound(int i)
     {
-        if(round > -1)
+        if(_round > -1)
         {
             processResults();
         }
-        round = i;
+        _round = i;
 
         _rewards = new List[_actions.size()];
     }
@@ -52,30 +52,37 @@ public class StatisticsAggregator
 
     private void processResults()
     {
+        final double sum[] = new double[_rewards.length];
+        final double mean[] = new double[_rewards.length];
+        final double variance[] = new double[_rewards.length];
+
         for(int action = 0; action < _rewards.length ; action++)
         {
-            double sum = 0;
-            double mean;
-            double variance = 0;
+            double actionSum = 0;
+            double actionMean;
+            double actionVariance = 0;
 
             if(_rewards[action] != null)
             {
                 for(Double d: _rewards[action])
-                    sum += d;
+                    actionSum += d;
             }
 
-            mean = (sum > 0? sum / _agentCount : 0 );
+            actionMean = (actionSum > 0? actionSum / _agentCount : 0 );
 
             if(_rewards[action] != null)
             {
                 for(Double d: _rewards[action])
-                    variance += Math.pow(mean - d, 2);
+                    actionVariance += Math.pow(actionMean - d, 2);
             }
-            System.out.println(round + ";" + action + ";" + sum + ";" + mean + ";" + variance);
+            sum[action] = actionSum;
+            mean[action] = actionMean;
+            variance[action] = actionVariance;
         }
+        updateProcessors(_round, sum,mean, variance);
     }
 
-    private void append(int round, double[] sum, double[] mean, double variance[])
+    private void updateProcessors(int round, double[] sum, double[] mean, double variance[])
     {
         for(Processor processor: _processors)
         {
