@@ -3,6 +3,7 @@ package nl.uu.cs.MaaAssignment;
 import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
 import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
+import nl.uu.cs.MaaAssignment.visualization.StatVisualization;
 
 import java.awt.*;
 import java.awt.geom.Dimension2D;
@@ -127,7 +128,8 @@ public class Simulation extends ASubject{
                 statistics.addReward(decisions.get(i), reward);
             }
             super.notifyAllObservers();
-            while(System.currentTimeMillis() - roundStartTime < 1000);
+            //Somehow the 1000 ms where to tight for the chart. this is a nasty solution.
+            while(System.currentTimeMillis() - roundStartTime < 1100);
         }
     }
 
