@@ -16,18 +16,17 @@ public class StatisticsAggregator
     private List<Double>[] _rewards;
     private int _round = -1;
     private final int _agentCount;
-    private final List<Processor> _processors;
+    private final static List<Processor> sProcessors = new ArrayList<Processor>();
 
     public StatisticsAggregator(List<Double> actions, int agentCount)
     {
         _actions = actions;
         _agentCount = agentCount;
-        _processors = new ArrayList<Processor>();
     }
 
-    public void addProcessor(Processor processor)
+    public static void addProcessor(Processor processor)
     {
-        _processors.add(processor);
+        sProcessors.add(processor);
     }
 
     public void startRound(int i)
@@ -84,7 +83,7 @@ public class StatisticsAggregator
 
     private void updateProcessors(int round, double[] sum, double[] mean, double variance[])
     {
-        for(Processor processor: _processors)
+        for(Processor processor: sProcessors)
         {
             processor.append(round,sum,mean,variance);
         }
