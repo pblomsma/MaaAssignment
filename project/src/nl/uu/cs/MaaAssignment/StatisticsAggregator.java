@@ -3,19 +3,31 @@ package nl.uu.cs.MaaAssignment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Statistics
+public class StatisticsAggregator
 {
+    public interface Processor
+    {
+        void append(int round, double[] sum, double[] mean, double variance[]);
+    }
+
     //Responsible for accumulating input stats for plot: mean reward per action per time.
 
     private final List<Double> _actions;
     private List<Double>[] _rewards;
     private int round = -1;
     private final int _agentCount;
+    private final List<Processor> _processors;
 
-    public Statistics(List<Double> actions, int agentCount)
+    public StatisticsAggregator(List<Double> actions, int agentCount)
     {
         _actions = actions;
         _agentCount = agentCount;
+        _processors = new ArrayList<Processor>();
+    }
+
+    public void addProcessor(Processor processor)
+    {
+        _processors.add(processor);
     }
 
     public void startRound(int i)
@@ -63,4 +75,11 @@ public class Statistics
         }
     }
 
+    private void append(int round, double[] sum, double[] mean, double variance[])
+    {
+        for(Processor processor: _processors)
+        {
+            processor.append(round,sum,mean,variance);
+        }
+    }
 }
