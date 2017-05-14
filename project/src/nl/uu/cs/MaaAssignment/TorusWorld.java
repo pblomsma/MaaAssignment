@@ -77,11 +77,81 @@ public class TorusWorld
         return collision;
     }
 
+    public boolean collisionCheckLine(int requestingAgent, double xPos, double yPos, double xVelocity, double yVelocity, double minDistance){
+        boolean collision = false;
+        // Get the smallest distance between the line and the location of every other agent than requestAgent
+        for(Agent agent: this.MALAgents.values()){
+            collision = (collision || this.distanceLinePointOnTorus(xPos, yPos, agent.get_posX(), agent.get_posY(), xVelocity, yVelocity) <= minDistance)
+                    && agent.getId() != requestingAgent;
+        }
+        return collision;
+    }
+
+    private double distanceLinePointOnTorus(double x1, double y1, double x2, double y2, double xVelocity, double yVelocity){
+        double distance = Double.POSITIVE_INFINITY;
+        double xIsPositive = xVelocity > 0? 1.0: -1.0;
+        double yIsPositive = yVelocity > 0? 1.0: -1.0;
+        // TODO: Fix this code, does not work at all! WIP
+        // Split the line up into line segments and check the distance for every segment, take the smallest one.
+        double xStart = x1;
+        for (double xEnd = xVelocity + x1; xIsPositive * xEnd >= x1; xEnd -= xIsPositive * _width) {
+            double yStart = y1;
+            for (double yEnd = yVelocity + y1; yIsPositive * yEnd >= y1; yEnd -= yIsPositive * _height) {
+                distance = Double.min(distance, this.distanceLineSegmentPoint(xStart, yStart, xEnd, yEnd, x2, y2));
+                yStart = yEnd;
+            }
+            xStart = xEnd;
+        }
+
+        return distance;
+    }
+
+    private double distanceLineSegmentPoint(double p1x, double p1y, double p2x, double p2y, double x, double y){
+        double distance = Double.POSITIVE_INFINITY;
+            // Check the distance of the line with the other agent for the plane and each of the 8 neighboring planes (projections), take the smallest distance.
+            for(int i = -1; i < 2; i++){
+            for(int j = -1; j<2; j++){
+                 distance = Double.min(distance, this.distanceLinePoint(p1x, p1y, p2x, p2y, x + i*_width,y+ j*_height));
+            }
+        }
+        return distance;
+    }
+
+    private double distanceLinePoint(double p1x, double p1y, double p2x, double p2y, double x, double y){
+        // Check the distance in Euclidean space
+        // The creation of line segments caused the line to be within the boundaries of a single projection of the torus
+        // The creation of the agent projections caused the point to be within those boundaries as well.
+        // Thus we can use Euclidean math.
+        double slope = -(p2y-p1y)/(p2x-p1x);
+        double b1 = p1y-slope*p1x;
+        // Find line (y=-slope*x+b2) perpendicular to the line defined by (px1, py1) and (px2, py2)
+        double b2 = y+slope*x;
+        double xIntersect = (b2 - b1)/(slope + slope);
+        double yIntersect = slope*xIntersect + b1;
+
+        // If the intersection point is not between p1 and p2, take the smallest distance to either point
+        // Else, return the distance between the point to the intersection point
+        double minx = Double.min(p1x, p2x);
+        double maxx = Double.max(p1x, p2x);
+        double miny = Double.min(p1y, p2y);
+        double maxy = Double.max(p1y, p2y);
+        if(xIntersect < maxx && xIntersect > minx && yIntersect < maxy && yIntersect > miny){
+            double distance = Math.pow(x-xIntersect, 2) + Math.pow(y-yIntersect, 2);
+            return Math.sqrt(distance);
+
+        } else {
+            double distanceP1 = Math.pow(p1x-xIntersect, 2) + Math.pow(p1y-yIntersect, 2);
+            double distanceP2 = Math.pow(p2x-xIntersect, 2) + Math.pow(p2y-yIntersect, 2);
+            return Math.sqrt(Double.min(distanceP1, distanceP2));
+        }
+    }
+
+
     double distanceOnTorus(double x1, double y1, double x2, double y2)
     {
         double dx = Math.pow(x1 - x2, 2);
         double ix = Math.pow(_width -  Math.max(x1, x2) + Math.min(x1, x2), 2);
-
+        // TODO bugcheck:  Moet dit niet 1x width en 1x height zijn?
         double dy = Math.pow(y1 - y2, 2);
         double iy = Math.pow(_width -  Math.max(y1, y2) + Math.min(y1, y2), 2);
 
