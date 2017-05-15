@@ -62,7 +62,7 @@ public class Simulation extends ASubject{
 
         System.out.println("Making Agents!");
         for (int i = 0; i < numberOfAgents; i++) {
-            Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions, algorithmParams), i, _collisionRadius);
+            Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions.size(), algorithmParams), i, _collisionRadius);
 
             double posX, posY;
 

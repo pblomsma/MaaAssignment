@@ -7,7 +7,7 @@ import java.util.List;
  */
 public interface Algorithm
 {
-    public Algorithm initialize(List<Double> actions, Object[] parameters);
+    public Algorithm initialize(int actionCount, Object[] parameters);
 
     public int nextAction(int round);
 

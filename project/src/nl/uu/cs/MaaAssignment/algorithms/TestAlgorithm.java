@@ -9,16 +9,16 @@ import java.util.Random;
  */
 public class TestAlgorithm implements Algorithm
 {
-    List<Double> _actions;
+    private int _actionCount;
 
     public void initialize(Object[] parameters) {
 
     }
 
     @Override
-    public Algorithm initialize(List<Double> actions, Object[] parameters)
+    public Algorithm initialize(int actionCount, Object[] parameters)
     {
-        _actions = actions;
+        _actionCount = actionCount;
         return this;
     }
 
@@ -26,7 +26,7 @@ public class TestAlgorithm implements Algorithm
     public int nextAction(int round) {
         //random choice
         Random random = new Random();
-        return random.nextInt(_actions.size());
+        return random.nextInt(_actionCount - 1);
     }
 
     @Override
