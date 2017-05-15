@@ -32,7 +32,11 @@ public class EGreedyAlgorithm implements Algorithm {
         _actionCount = actionCount;
         _actionTrail = new HashMap<>();
 
-        _scores = new Score[actionCount - 1];
+        _scores = new Score[_actionCount];
+        for(int i = 0 ; i < _scores.length;i++)
+        {
+            _scores[i] = new Score();
+        }
 
         return this;
     }
@@ -59,11 +63,6 @@ public class EGreedyAlgorithm implements Algorithm {
     {
         int action = _actionTrail.get(round);
 
-        if(_scores[action] == null)
-        {
-            _scores[action] = new Score();
-        }
-
         _scores[action].n++;
         _scores[action].q += (1.0 / _scores[action].n) * (reward - _scores[action].q);
     }
@@ -71,7 +70,7 @@ public class EGreedyAlgorithm implements Algorithm {
     //Exploration (learning)
     private int getRandomAction()
     {
-       return new Random().nextInt(_actionCount - 1);
+       return new Random().nextInt(_actionCount);
     }
 
     //Exploitation (use what is learned)
