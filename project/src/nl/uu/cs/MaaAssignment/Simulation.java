@@ -1,6 +1,7 @@
 package nl.uu.cs.MaaAssignment;
 
 import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
+import nl.uu.cs.MaaAssignment.algorithms.EGreedyAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
 import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
 import nl.uu.cs.MaaAssignment.visualization.StatVisualization;
@@ -9,10 +10,6 @@ import java.awt.*;
 import java.awt.geom.Dimension2D;
 import java.util.*;
 import java.util.List;
-
-/**
- * Created by Peter on 9-5-2017.
- */
 
 public class Simulation extends ASubject{
 
@@ -37,7 +34,7 @@ public class Simulation extends ASubject{
                 Integer.parseInt(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), Double.parseDouble(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]), Arrays.copyOfRange(args, 10, args.length));
     }
 
-    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
+    private Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
 
         _reward1 = reward1;
         _reward2 = reward2;
@@ -54,14 +51,14 @@ public class Simulation extends ASubject{
         //Create actions
         double angle = 360.0 / (double) numberOfActions;
 
-        _actions = new ArrayList<Double>();
+        _actions = new ArrayList<>();
         for (int i = 0; i < numberOfActions; i++) {
             _actions.add(i * angle);
         }
 
         Random randomGenerator = new Random();
 
-        _agents = new HashMap<Integer, Agent>();
+        _agents = new HashMap<>();
 
         System.out.println("Making Agents!");
         for (int i = 0; i < numberOfAgents; i++) {
@@ -103,7 +100,7 @@ public class Simulation extends ASubject{
             long roundStartTime = System.currentTimeMillis();
             statistics.startRound(round);
 
-            Map<Integer, Integer> decisions = new HashMap<Integer, Integer>();
+            Map<Integer, Integer> decisions = new HashMap<>();
 
             //Yield decisions
             for (Agent agent : _agents.values()) {
@@ -111,7 +108,7 @@ public class Simulation extends ASubject{
             }
 
             //Play in random order
-            List<Integer> agentIds = new ArrayList<Integer>();
+            List<Integer> agentIds = new ArrayList<>();
             agentIds.addAll(decisions.keySet());
             Collections.shuffle(agentIds);
 
@@ -155,7 +152,10 @@ public class Simulation extends ASubject{
     }
 
     private Algorithm getAlgorithm(int identifier) {
-        switch (identifier) {
+        switch (identifier)
+        {
+            case 0:
+                return new EGreedyAlgorithm();
             default:
                 return new TestAlgorithm();
         }
