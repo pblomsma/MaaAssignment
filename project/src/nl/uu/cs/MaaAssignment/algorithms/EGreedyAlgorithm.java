@@ -82,7 +82,7 @@ public class EGreedyAlgorithm implements Algorithm {
         {
             if(_scores[i].q > _scores[highestScore].q)
             {
-                highestScore =i;
+                highestScore = i;
             }
         }
         return highestScore;

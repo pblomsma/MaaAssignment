@@ -2,6 +2,7 @@ package nl.uu.cs.MaaAssignment;
 
 import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.EGreedyAlgorithm;
+import nl.uu.cs.MaaAssignment.algorithms.OivAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
 import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
 import nl.uu.cs.MaaAssignment.visualization.StatVisualization;
@@ -156,6 +157,8 @@ public class Simulation extends ASubject{
         {
             case 0:
                 return new EGreedyAlgorithm();
+            case 1:
+                return new OivAlgorithm();
             default:
                 return new TestAlgorithm();
         }
