@@ -2,8 +2,6 @@ package nl.uu.cs.MaaAssignment;
 
 import com.sun.javafx.geom.Vec2d;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.HashMap;
 
 public class TorusWorld
@@ -18,6 +16,7 @@ public class TorusWorld
     private double _width;
     private double _height;
     private double _radius;
+    private final double _maxMovingDistance;
 
     private HashMap<Integer, Agent> MALAgents;
 
@@ -26,7 +25,7 @@ public class TorusWorld
         this._width = _width;
         this._height = _height;
         this._radius = _radius;
-
+        _maxMovingDistance = Math.min(_width, _height) / 2.0;
         this.MALAgents = new HashMap<Integer, Agent>();
     }
 
@@ -62,6 +61,12 @@ public class TorusWorld
         double movingDistance       = distanceOnTorus(x1, y1, x2, y2);
         double startToPointDistance = distanceOnTorus(x0, y0, x1, y1);
         double endToPointDistance   = distanceOnTorus(x0, y0, x2, y2);
+
+        if(movingDistance > _maxMovingDistance)
+        {
+            System.err.println("The distance is to big in comparison with the fieldsize. Correct collision detection is not guaranteed!");
+        }
+
         double perimeter = 0.5 * ( movingDistance + startToPointDistance + endToPointDistance);
         double doubleTriangleSize = 2 * Math.sqrt(perimeter * (perimeter - movingDistance) * (perimeter - startToPointDistance) * (perimeter - endToPointDistance));
         return doubleTriangleSize / movingDistance;
