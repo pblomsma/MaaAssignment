@@ -5,10 +5,8 @@ import nl.uu.cs.MaaAssignment.algorithms.EGreedyAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.OivAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
 import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
-import nl.uu.cs.MaaAssignment.visualization.StatVisualization;
 
 import java.awt.*;
-import java.awt.geom.Dimension2D;
 import java.util.*;
 import java.util.List;
 
@@ -29,13 +27,9 @@ public class Simulation extends ASubject{
     private final int _rounds;
 
     private final TorusWorld _world;
+    private final MaaAssignmentFrame _windowFrame;
 
-    public static void main(String[] args) {
-        new Simulation(Integer.parseInt(args[0]),
-                Integer.parseInt(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), Double.parseDouble(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]), Arrays.copyOfRange(args, 10, args.length));
-    }
-
-    private Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
+    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
 
         _reward1 = reward1;
         _reward2 = reward2;
@@ -80,10 +74,7 @@ public class Simulation extends ASubject{
         }
 
         System.out.println("Making Window!");
-        MaaAssignmentFrame windowFrame = new MaaAssignmentFrame(this);
-
-        System.out.println("Starting simulation!");
-        start();
+        this._windowFrame = new MaaAssignmentFrame(this);
     }
 
     public Collection<Agent> getAgents(){
@@ -94,7 +85,11 @@ public class Simulation extends ASubject{
         return new Dimension((int)_width, (int)_height);
     }
 
-    private void start() {
+    public MaaAssignmentFrame getWindowFrame() {
+        return _windowFrame;
+    }
+
+    public void start() {
         StatisticsAggregator statistics = new StatisticsAggregator(_actions, _agents.size());
 
         for (int round = 0; round < _rounds; round++) {

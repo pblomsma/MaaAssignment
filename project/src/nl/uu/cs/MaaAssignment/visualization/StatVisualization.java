@@ -1,6 +1,5 @@
 package nl.uu.cs.MaaAssignment.visualization;
 
-import nl.uu.cs.MaaAssignment.IObserver;
 import nl.uu.cs.MaaAssignment.Simulation;
 import nl.uu.cs.MaaAssignment.StatisticsAggregator;
 import org.jfree.chart.ChartFactory;
@@ -71,6 +70,10 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
             timeSeries.add(time, mean[i]);
         }
         updateChart();
+    }
+
+    public JFreeChart get_chart() {
+        return _chart;
     }
 
     private void updateChart()
