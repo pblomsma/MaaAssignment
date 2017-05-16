@@ -121,8 +121,6 @@ public class Simulation extends ASubject{
                 statistics.addReward(decisions.get(i), reward);
             }
             super.notifyAllObservers();
-            //Somehow the 1000 ms where to tight for the chart. this is a nasty solution.
-            while(System.currentTimeMillis() - roundStartTime < 1100);
         }
     }
 
@@ -139,13 +137,7 @@ public class Simulation extends ASubject{
         double yVelocity = Math.sin(direction) * magnitude;
 
         return _world.moveAgent(agent.getId(), xVelocity, yVelocity);
-
-        //double newX = agent.get_posX()  + Math.cos(direction) * magnitude;
-        //double newY = agent.get_posY()  + Math.sin(direction) * magnitude;
-
-        //TODO: add modulo and test if there's no collision from the line to all circles.
-        //return true;
-    }
+     }
 
     private Algorithm getAlgorithm(int identifier) {
         switch (identifier)
