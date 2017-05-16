@@ -5,9 +5,7 @@ import nl.uu.cs.MaaAssignment.StatisticsAggregator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.Second;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.*;
 import org.jfree.data.xy.XYDataset;
 
 import javax.swing.*;
@@ -62,7 +60,7 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
             initPanel();
         }
 
-        Second time = new Second( );
+        RegularTimePeriod time = new Millisecond();
 
         for(int i = 0; i < mean.length ; i++)
         {
