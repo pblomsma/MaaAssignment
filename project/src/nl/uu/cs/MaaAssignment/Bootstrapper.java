@@ -5,6 +5,8 @@ import org.jfree.chart.JFreeChart;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,7 +31,8 @@ public class Bootstrapper {
                 Arrays.copyOfRange(args, 10, args.length)
         );
 
-        File outputFolder = new File("/simOutput");
+        Path currentRelativePath = Paths.get("");
+        File outputFolder = new File(currentRelativePath + "/simOutput");
         if(outputFolder.mkdir() && outputFolder.exists())
             System.out.println("Folder for simulation output exists!");
 
@@ -42,7 +45,7 @@ public class Bootstrapper {
 
         JFreeChart chart = simulation.getWindowFrame().getStatPanel().get_chart();
         try {
-            File toSave = new File(outputFolder.getAbsolutePath() + "/" + timeStamp.toInstant().getEpochSecond() + ".jpg");
+            File toSave = new File(outputFolder, timeStamp.toInstant().getEpochSecond() + ".jpg");
             if(toSave.createNewFile())
                 ChartUtilities.saveChartAsJPEG( toSave, chart, 1920, 1080);
         } catch (IOException e) {
