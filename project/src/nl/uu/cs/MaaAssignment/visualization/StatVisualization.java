@@ -5,6 +5,8 @@ import nl.uu.cs.MaaAssignment.StatisticsAggregator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItemSource;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.*;
 import org.jfree.data.xy.XYDataset;
@@ -41,11 +43,12 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
                 "Time-step",
                 "Reward",
                 dataset,
-                false,
+                true,
                 false,
                 false);
         chart.addSubtitle(new TextTitle(_simulation.getParameters().toString()));
         chart.getXYPlot().getDomainAxis().setVisible(false);
+
         return chart;
     }
 
