@@ -12,42 +12,30 @@ import java.util.List;
 
 public class Simulation extends ASubject{
 
-    //TODO : ADD REINFORCEMENT LEARNING ALGORITHMS!!!!
     private final List<Double> _actions;
     private final Map<Integer, Agent> _agents;
 
-    private final double _speed;
-    private final double _collisionRadius;
-    private final double _width;
-    private final double _height;
-
-    private final double _reward1;
-    private final double _reward2;
-
-    private final int _rounds;
-
     private final TorusWorld _world;
     private final MaaAssignmentFrame _windowFrame;
+    private final Parameters _parameters;
 
-    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
+    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams)
+    {
+            this(new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius,width, height, reward1, reward2, rounds, algorithmId, algorithmParams ));
+    }
 
-        _reward1 = reward1;
-        _reward2 = reward2;
+    public Simulation(Parameters parameters)
+        {
+            _parameters = parameters;
 
-        _speed = speed;
-        _collisionRadius = collisionRadius;
-        _rounds = rounds;
 
-        _width = width;
-        _height = height;
-
-        _world = new TorusWorld(width, height, collisionRadius);
+        _world = new TorusWorld(parameters.getWidth(), parameters.getHeight(), parameters.getCollisionRadius());
 
         //Create actions
-        double angle = 360.0 / (double) numberOfActions;
+        double angle = 360.0 / (double) parameters.getNumberOfActions();
 
         _actions = new ArrayList<>();
-        for (int i = 0; i < numberOfActions; i++) {
+        for (int i = 0; i < parameters.getNumberOfActions(); i++) {
             _actions.add(i * angle);
         }
 
@@ -56,14 +44,14 @@ public class Simulation extends ASubject{
         _agents = new HashMap<>();
 
         System.out.println("Making Agents!");
-        for (int i = 0; i < numberOfAgents; i++) {
-            Agent agent = new Agent(getAlgorithm(algorithmId).initialize(_actions.size(), algorithmParams), i, _collisionRadius);
+        for (int i = 0; i < parameters.getNumberOfAgents(); i++) {
+            Agent agent = new Agent(getAlgorithm(parameters.getAlgorithmId()).initialize(_actions.size(), parameters.getAlgorithmParams()), i, parameters.getCollisionRadius());
 
             double posX, posY;
 
             do {
-                posX = randomGenerator.nextDouble() * _width;
-                posY = randomGenerator.nextDouble() * _height;
+                posX = randomGenerator.nextDouble() * parameters.getWidth();
+                posY = randomGenerator.nextDouble() * parameters.getHeight();
             }
             while (!putOnPosition(agent));
 
@@ -82,7 +70,7 @@ public class Simulation extends ASubject{
     }
 
     public Dimension getWorldSize(){
-        return new Dimension((int)_width, (int)_height);
+        return new Dimension((int)_parameters.getWidth(), (int)_parameters.getHeight());
     }
 
     public MaaAssignmentFrame getWindowFrame() {
@@ -92,7 +80,7 @@ public class Simulation extends ASubject{
     public void start() {
         StatisticsAggregator statistics = new StatisticsAggregator(_actions, _agents.size());
 
-        for (int round = 0; round < _rounds; round++) {
+        for (int round = 0; round < _parameters.getRounds(); round++) {
             long roundStartTime = System.currentTimeMillis();
             statistics.startRound(round);
 
@@ -112,9 +100,9 @@ public class Simulation extends ASubject{
                 Agent agent = _agents.get(i);
                 double reward;
                 if (simulationStep(agent, decisions.get(i))) {
-                    reward = _reward1;
+                    reward = _parameters.getReward1();
                 } else {
-                    reward = _reward2;
+                    reward = _parameters.getReward2();
                 }
 
                 agent.reward(reward, round);
@@ -130,7 +118,7 @@ public class Simulation extends ASubject{
     }
 
     private boolean simulationStep(Agent agent, int action) {
-        double magnitude = _speed;
+        double magnitude = _parameters.getSpeed();
         double direction = _actions.get(action);
 
         double xVelocity = Math.cos(direction) * magnitude;
