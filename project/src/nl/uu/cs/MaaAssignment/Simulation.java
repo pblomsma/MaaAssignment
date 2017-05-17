@@ -19,6 +19,24 @@ public class Simulation extends ASubject{
     private final MaaAssignmentFrame _windowFrame;
     private final Parameters _parameters;
 
+
+    public static void main(String[] args){
+        Simulation simulation = new Simulation(
+            Integer.parseInt(args[0]),                      // number of agents
+            Integer.parseInt(args[1]),                      // number of actions
+            Double.parseDouble(args[2]),                    // speed
+            Double.parseDouble(args[3]),                    // collision radius
+            Double.parseDouble(args[4]),                    // width
+            Double.parseDouble(args[5]),                    // height
+            Double.parseDouble(args[6]),                    // reward 1
+            Double.parseDouble(args[7]),                    // reward 2
+            Integer.parseInt(args[8]),                      // rounds
+            Integer.parseInt(args[9]),                      // algorithm ID
+            Arrays.copyOfRange(args, 10, args.length)       // algorithm params
+        );
+        simulation.start();
+    }
+
     public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams)
     {
             this(new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius,width, height, reward1, reward2, rounds, algorithmId, algorithmParams ));
