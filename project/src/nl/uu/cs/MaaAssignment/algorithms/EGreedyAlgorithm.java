@@ -15,13 +15,20 @@ public class EGreedyAlgorithm implements Algorithm {
     @Override
     public Algorithm initialize(int actionCount, Object[] parameters)
     {
-        //TODO: exception throwing is more elegant, but maybe overkill for this simulation.
         if((parameters == null) || (parameters.length != 1))
         {
             System.err.print("Amount of parameters specifified for e-greedy is incorrect. Only specify the epsilon");
             System.exit(1);
         }
-        _epsilon = Double.parseDouble((String)parameters[0]);
+
+        if(parameters[0] instanceof  Double)
+        {
+            _epsilon = (Double)parameters[0];
+        }
+        else
+        {
+            _epsilon = Double.parseDouble((String) parameters[0]);
+        }
 
         if(!(_epsilon > 0 && _epsilon < 1))
         {
