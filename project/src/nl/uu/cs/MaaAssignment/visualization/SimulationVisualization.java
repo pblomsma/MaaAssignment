@@ -35,7 +35,7 @@ public class SimulationVisualization extends JPanel implements IObserver {
         for(Agent agent: agents) {
             g.setColor(Color.getHSBColor(agent.getId()*25, 5, 5));
             g.fillOval((int) agent.get_posX(), (int) agent.get_posY(), (int) agent.getRadius(), (int) agent.getRadius());
-            System.out.println("Agent " + agent.getId() + " location : x=" + agent.get_posX() + " y=" + agent.get_posY());
+//            System.out.println("Agent " + agent.getId() + " location : x=" + agent.get_posX() + " y=" + agent.get_posY());
         }
     }
 
