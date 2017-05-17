@@ -138,4 +138,8 @@ public class Simulation extends ASubject{
                 return new TestAlgorithm();
         }
     }
+
+    public Parameters getParameters() {
+        return _parameters;
+    }
 }
