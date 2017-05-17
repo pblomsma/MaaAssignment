@@ -64,7 +64,7 @@ public class TorusWorld
 
         if(movingDistance > _maxMovingDistance)
         {
-            System.err.println("The distance is to big in comparison with the fieldsize. Correct collision detection is not guaranteed!");
+            System.err.println("The distance (" + movingDistance + ")is to big in comparison with the fieldsize(" + _width + "/"+ _height + "). Correct collision detection is not guaranteed!");
         }
 
         double perimeter = 0.5 * ( movingDistance + startToPointDistance + endToPointDistance);
