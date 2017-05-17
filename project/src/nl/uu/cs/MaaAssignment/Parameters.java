@@ -89,8 +89,8 @@ public class Parameters {
 
     public String toString()
     {
-        return "Parameters: R1: " + getReward1() + "R2: " + getReward2() + "a.param: " + getAlgorithmParams()[0] + "#agents: " + getNumberOfAgents() + " #actions: " +
-                getNumberOfActions() + "torussize: " + getWidth() + "/" + getHeight() + " speed: " + getSpeed() +
-                " radius: " + getCollisionRadius() + " #rounds: " + getRounds() + " algorithm" + getAlgorithmId();
+        return "Parameters: Reward 1: " + getReward1() + "Reward 2: " + getReward2() + " Epsilon: " + getAlgorithmParams()[0] + " #Agents: " + getNumberOfAgents() + " #Actions: " +
+                getNumberOfActions() + " Fieldsize: " + getWidth() + "/" + getHeight() + " Speed: " + getSpeed() +
+                " Radius: " + getCollisionRadius() + " #Rounds: " + getRounds() + " Algorithm" + getAlgorithmId();
     }
 }
