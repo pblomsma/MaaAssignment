@@ -82,7 +82,7 @@ public class TorusWorld
         if(!this.isColliding(agent, newPosition,agent.getRadius()*2))
         {
             agent.setPosition(newPosition.x, newPosition.y);
-            System.out.println("Setting new position for agent " + id);
+//            System.out.println("Setting new position for agent " + id);
             return true;
         }
         return false;

@@ -53,8 +53,7 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     @Override
     public void append(int round, double[] sum, double[] mean, double[] variance)
     {
-        System.out.print("append()");
-        if(_timeSeries == null)
+       if(_timeSeries == null)
         {
             _timeSeries = new TimeSeriesCollection();
             for(int i = 0; i<mean.length ;i++)

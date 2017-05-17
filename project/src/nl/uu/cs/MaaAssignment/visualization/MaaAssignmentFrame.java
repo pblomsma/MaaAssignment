@@ -33,7 +33,7 @@ public class MaaAssignmentFrame extends JFrame {
         tabContainer.addTab("Statistics", statPanel);
 
         this.pack();
-        this.setVisible(true);
+      //  this.setVisible(true);
     }
 
     public StatVisualization getStatPanel() {

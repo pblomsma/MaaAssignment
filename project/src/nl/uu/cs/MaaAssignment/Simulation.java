@@ -63,7 +63,7 @@ public class Simulation extends ASubject{
 
         _agents = new HashMap<>();
 
-        System.out.println("Making Agents!");
+//        System.out.println("Making Agents!");
         for (int i = 0; i < parameters.getNumberOfAgents(); i++) {
             Agent agent = new Agent(getAlgorithm(parameters.getAlgorithmId()).initialize(_actions.size(), parameters.getAlgorithmParams()), i, parameters.getCollisionRadius());
 
@@ -75,13 +75,13 @@ public class Simulation extends ASubject{
             }
             while (!putOnPosition(agent));
 
-            System.out.println("Placing Agent " + i + " !");
+//            System.out.println("Placing Agent " + i + " !");
             agent.setPosition(posX, posY);
 
             _agents.put(i, agent);
         }
 
-        System.out.println("Making Window!");
+//        System.out.println("Making Window!");
         this._windowFrame = new MaaAssignmentFrame(this);
     }
 
@@ -128,9 +128,9 @@ public class Simulation extends ASubject{
                 agent.reward(reward, round);
                 statistics.addReward(decisions.get(i), reward);
             }
-            statistics.finalize();
             super.notifyAllObservers();
         }
+        statistics.finalize();
     }
 
 
@@ -166,6 +166,6 @@ public class Simulation extends ASubject{
 
     public void shutDown()
     {
-        new WindowEvent(_windowFrame, WindowEvent.WINDOW_CLOSING);
+        _windowFrame.dispose();
     }
 }
