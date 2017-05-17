@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -16,8 +17,12 @@ import java.util.Date;
 public class Bootstrapper {
 
     public static void main(String[] args) {
+        playingAround();
+    }
 
-//
+
+    private static void firstImplementation(String[] args)
+    {
 //        Simulation simulation = new Simulation(
 //                Integer.parseInt(args[0]),                      // number of agents
 //                Integer.parseInt(args[1]),                      // number of actions
@@ -31,6 +36,7 @@ public class Bootstrapper {
 //                Integer.parseInt(args[9]),                      // algorithm ID
 //                Arrays.copyOfRange(args, 10, args.length)       // algorithm params
 //        );
+
 
         int amountOfRuns = 10;
 
@@ -59,40 +65,88 @@ public class Bootstrapper {
 
         for (int i = 0; i < amountOfRuns; i++) {
             Simulation simulation = new Simulation(
-                    agents + (agentChange *i),
-                    actions + (actionChange *i),
-                    speed + (speedChange *i),
-                    collisionRadius + (collisionRadiusChange *i),
-                    width + (widthChange *i),
-                    height + (heightChange *i),
-                    rewardOne + (rewardOneChange *i),
-                    rewardTwo + (rewardTwoChange *i),
-                    roundAmount + (roundAmountChange *i),
+                    agents + (agentChange * i),
+                    actions + (actionChange * i),
+                    speed + (speedChange * i),
+                    collisionRadius + (collisionRadiusChange * i),
+                    width + (widthChange * i),
+                    height + (heightChange * i),
+                    rewardOne + (rewardOneChange * i),
+                    rewardTwo + (rewardTwoChange * i),
+                    roundAmount + (roundAmountChange * i),
                     algorithmID,
                     algorithmParams
             );
 
-            Path currentRelativePath = Paths.get("");
-            File outputFolder = new File(currentRelativePath + "/simOutput");
-            if(outputFolder.mkdir() && outputFolder.exists())
-                System.out.println("Folder for simulation output exists!");
-
-
-            Date timeStamp = Date.from(Instant.now());
-            System.out.println("Current TimeStamp : " + timeStamp);
-
-            System.out.println("Starting simulation!");
             simulation.start();
+            saveSimulation(simulation);
+        }
 
-            JFreeChart chart = simulation.getWindowFrame().getStatPanel().get_chart();
-            System.out.println(chart);
-            try {
-                File toSave = new File(outputFolder, timeStamp.toInstant().getEpochSecond() + ".jpg");
-                if(toSave.createNewFile())
-                    ChartUtilities.saveChartAsJPEG( toSave, chart, 1920, 1080);
-            } catch (IOException e) {
-                e.printStackTrace();
+    }
+
+    private static void playingAround()
+    {
+        //Static:
+        int agents = 10;
+        int actions = 10;
+        double speed = 3;
+        double collisionRadius = 1;
+        double width = 10;
+        double height = 10;
+        int roundAmount = 10;
+        int algorithmID = 0;
+
+
+        for(double rewardOne = 0; rewardOne < 10; rewardOne++)
+        {
+            for(double rewardTwo = 0; rewardTwo < 10; rewardTwo++)
+            {
+                for(double epsilon = 0.1; epsilon < 0.99; epsilon += 0.1)
+                {
+                    Simulation simulation = new Simulation(
+                            agents ,
+                            actions ,
+                            speed ,
+                            collisionRadius ,
+                            width,
+                            height,
+                            rewardOne ,
+                            rewardTwo ,
+                            roundAmount,
+                            algorithmID,
+                            new Object[]{epsilon}
+                    );
+
+                    simulation.start();
+                    saveSimulation(simulation);
+                    simulation.shutDown();
+                }
             }
+        }
+    }
+
+    public static void saveSimulation(Simulation simulation)
+    {
+        Path currentRelativePath = Paths.get("");
+        File outputFolder = new File(currentRelativePath + "/simOutput");
+        if(outputFolder.mkdir() && outputFolder.exists())
+            System.out.println("Folder for simulation output exists!");
+
+
+        Date timeStamp = Date.from(Instant.now());
+        System.out.println("Current TimeStamp : " + timeStamp);
+
+        System.out.println("Starting simulation!");
+        simulation.start();
+
+        JFreeChart chart = simulation.getWindowFrame().getStatPanel().get_chart();
+        System.out.println(chart);
+        try {
+            File toSave = new File(outputFolder, timeStamp.toInstant().getEpochSecond() + "_" + timeStamp.toInstant().getNano() + ".jpg");
+            if(toSave.createNewFile())
+                ChartUtilities.saveChartAsJPEG( toSave, chart, 1920, 1080);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
