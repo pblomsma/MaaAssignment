@@ -45,6 +45,7 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
                 false,
                 false);
         chart.addSubtitle(new TextTitle(_simulation.getParameters().toString()));
+        chart.getXYPlot().getDomainAxis().setVisible(false);
         return chart;
     }
 
