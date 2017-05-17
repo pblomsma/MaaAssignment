@@ -5,6 +5,7 @@ import nl.uu.cs.MaaAssignment.StatisticsAggregator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.*;
 import org.jfree.data.xy.XYDataset;
 
@@ -35,7 +36,7 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     }
 
     private JFreeChart createChart( final XYDataset dataset ) {
-        return ChartFactory.createTimeSeriesChart(
+        final JFreeChart chart =  ChartFactory.createTimeSeriesChart(
                 "Mean reward of action per time step",
                 "Time-step",
                 "Reward",
@@ -43,6 +44,8 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
                 false,
                 false,
                 false);
+        chart.addSubtitle(new TextTitle(_simulation.getParameters().toString()));
+        return chart;
     }
 
     @Override
