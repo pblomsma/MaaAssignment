@@ -1,5 +1,6 @@
 package nl.uu.cs.MaaAssignment;
 
+
 import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.EGreedyAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.OivAlgorithm;
@@ -7,6 +8,7 @@ import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
 import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.util.*;
 import java.util.List;
 
@@ -162,5 +164,8 @@ public class Simulation extends ASubject{
         return _parameters;
     }
 
-
+    public void shutDown()
+    {
+        new WindowEvent(_windowFrame, WindowEvent.WINDOW_CLOSING);
+    }
 }
