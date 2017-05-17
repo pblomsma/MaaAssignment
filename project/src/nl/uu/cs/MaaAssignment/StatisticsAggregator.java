@@ -40,6 +40,11 @@ public class StatisticsAggregator
         _rewards = new List[_actions.size()];
     }
 
+    public void finalize()
+    {
+        _rewards = new List[_actions.size()];
+    }
+
     public void addReward(int action, double reward)
     {
         if(_rewards[action] == null)

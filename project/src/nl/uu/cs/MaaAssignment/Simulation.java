@@ -126,6 +126,7 @@ public class Simulation extends ASubject{
                 agent.reward(reward, round);
                 statistics.addReward(decisions.get(i), reward);
             }
+            statistics.finalize();
             super.notifyAllObservers();
         }
     }
@@ -160,4 +161,6 @@ public class Simulation extends ASubject{
     public Parameters getParameters() {
         return _parameters;
     }
+
+
 }
