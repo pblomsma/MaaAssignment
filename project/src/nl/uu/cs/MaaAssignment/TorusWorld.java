@@ -18,7 +18,7 @@ public class TorusWorld
     private double _radius;
     private final double _maxMovingDistance;
 
-    private HashMap<Integer, Agent> MALAgents;
+    private HashMap<Integer, Agent> _agents;
 
     public TorusWorld(double _width, double _height, double _radius)
     {
@@ -26,14 +26,14 @@ public class TorusWorld
         this._height = _height;
         this._radius = _radius;
         _maxMovingDistance = Math.min(_width, _height) / 2.0;
-        this.MALAgents = new HashMap<Integer, Agent>();
+        this._agents = new HashMap<Integer, Agent>();
     }
 
     public boolean addAgent(int id, Agent agent, double posX, double posY)
     {
         if(!collisionCheckPosition(id, posX, posY, this._radius)) {
             agent.setPosition(posX, posY);
-            this.MALAgents.put(id, agent);
+            this._agents.put(id, agent);
             return true;
         }
         return false;
@@ -41,46 +41,47 @@ public class TorusWorld
 
     public void teleportAgent(int id, double posX, double posY)
     {
-        Agent position = this.MALAgents.get(id);
+        Agent position = this._agents.get(id);
         position.setPosition(posX, posY);
     }
 
     /**
      * Assumptions:
      * * Distance (x1, y1) and (x2, y2) is not bigger than the half of the smallest edge of the torus.
-     * @param x0 Point Location
-     * @param y0 Point Location
-     * @param x1 Line Point 1
-     * @param y1 Line Point 1
-     * @param x2 Line Point 2
-     * @param y2 Line Point 2
+     * @param pointX Point Location
+     * @param pointY Point Location
+     * @param lineStartX Line Point 1
+     * @param lineStartY Line Point 1
+     * @param lineEndX Line Point 2
+     * @param lineEndY Line Point 2
      * @return shortestDistanceBetweenLineAndPoint
      */
-    public double shortestDistanceBetweenLineAndPoint(double x0, double y0, double x1, double y1, double x2, double y2)
+    public double shortestDistanceBetweenLineAndPoint(double pointX, double pointY, double lineStartX, double lineStartY, double lineEndX, double lineEndY)
     {
-        double movingDistance       = distanceOnTorus(x1, y1, x2, y2);
-        double startToPointDistance = distanceOnTorus(x0, y0, x1, y1);
-        double endToPointDistance   = distanceOnTorus(x0, y0, x2, y2);
+        double lineLength       = distanceOnTorus(lineStartX, lineStartY, lineEndX, lineEndY);
+        double startToPointDistance = distanceOnTorus(pointX, pointY, lineStartX, lineStartY);
+        double endToPointDistance   = distanceOnTorus(pointX, pointY, lineEndX, lineEndY);
 
-        if(movingDistance > _maxMovingDistance)
+        if(lineLength > _maxMovingDistance)
         {
-            System.err.println("The distance (" + movingDistance + ")is to big in comparison with the fieldsize(" + _width + "/"+ _height + "). Correct collision detection is not guaranteed!");
+            //Moving distance should be equal to speed.
+            System.err.println("The distance (" + lineLength + ")is to big in comparison with the fieldsize(" + _width + "/"+ _height + "). Correct collision detection is not guaranteed!");
         }
 
-        double perimeter = 0.5 * ( movingDistance + startToPointDistance + endToPointDistance);
-        double doubleTriangleSize = 2 * Math.sqrt(perimeter * (perimeter - movingDistance) * (perimeter - startToPointDistance) * (perimeter - endToPointDistance));
-        return doubleTriangleSize / movingDistance;
+        double perimeter = 0.5 * ( lineLength + startToPointDistance + endToPointDistance);
+        double doubleTriangleSize = 2 * Math.sqrt(perimeter * (perimeter - lineLength) * (perimeter - startToPointDistance) * (perimeter - endToPointDistance));
+        return doubleTriangleSize / lineLength;
     }
 
     public boolean moveAgent(int id, double xVelocity, double yVelocity)
     {
-        // Im choosing to do the collisionCheck here
-        Agent position = this.MALAgents.get(id);
-        Vec2d newPosition = getNewPosition(position.get_posX(), position.get_posY(), xVelocity, yVelocity);
+        Agent agent = _agents.get(id);
+        
+        Vec2d newPosition = getNewPosition(agent.get_posX(), agent.get_posY(), xVelocity, yVelocity);
 
-        if(!this.collisionCheckLine(id, position.get_posX(), position.get_posY(), position.getRadius()*2, newPosition))
+        if(!this.isColliding(agent, newPosition,agent.getRadius()*2))
         {
-            position.setPosition(newPosition.x, newPosition.y);
+            agent.setPosition(newPosition.x, newPosition.y);
             System.out.println("Setting new position for agent " + id);
             return true;
         }
@@ -93,7 +94,7 @@ public class TorusWorld
         // Since all radii are the same now, making the checkDistance here
         double collisionDistance = radius*2;
 
-        for (Agent position: MALAgents.values()) {
+        for (Agent position: _agents.values()) {
             // Check collision by seeing if radii summed is smaller than the euclidean distance
             if (position.getId() != requestingAgent && distanceOnTorus(xPos, yPos, position.get_posX(), position.get_posY()) <= collisionDistance) {
                 collision = true;
@@ -103,15 +104,23 @@ public class TorusWorld
         return collision;
     }
 
-    public boolean collisionCheckLine(int requestingAgent, double xPos, double yPos, double minDistance, Vec2d newPosition){
-        boolean collision = false;
-
+    public boolean isColliding(Agent currentAgent, Vec2d newPosition, double minDistance)
+    {
         // Get the smallest distance between the line and the location of every other agent than requestAgent
-        for(Agent agent: this.MALAgents.values()){
-            collision = (collision || this.shortestDistanceBetweenLineAndPoint(xPos, yPos, agent.get_posX(), agent.get_posY(), newPosition.x, newPosition.y) <= minDistance)
-                    && agent.getId() != requestingAgent;
+        for(Agent otherAgent: _agents.values())
+        {
+            if(otherAgent.equals(currentAgent))
+            {
+                //ignore
+                continue;
+            }
+
+            if(shortestDistanceBetweenLineAndPoint(otherAgent.get_posX(), otherAgent.get_posY(), currentAgent.get_posX(), currentAgent.get_posY(), newPosition.x, newPosition.y) <= minDistance)
+            {
+                return true;
+            }
         }
-        return collision;
+        return false;
     }
 
     private double distanceOnTorus(double x1, double y1, double x2, double y2)
@@ -124,7 +133,7 @@ public class TorusWorld
         return Math.sqrt(Math.min(dx, ix) + Math.min(dy, iy));
     }
 
-    private Vec2d getNewPosition(double xPos, double yPos, double xVelocity, double yVelocity)
+    public Vec2d getNewPosition(double xPos, double yPos, double xVelocity, double yVelocity)
     {
         double newX = xPos + xVelocity;
         double newY = yPos + yVelocity;
@@ -149,10 +158,10 @@ public class TorusWorld
     }
 
 
-//    public boolean collisionCheckLine(int requestingAgent, double xPos, double yPos, double xVelocity, double yVelocity, double minDistance){
+//    public boolean isColliding(int requestingAgent, double xPos, double yPos, double xVelocity, double yVelocity, double minDistance){
 //        boolean collision = false;
 //        // Get the smallest distance between the line and the location of every other agent than requestAgent
-//        for(Agent agent: this.MALAgents.values()){
+//        for(Agent agent: this._agents.values()){
 //            collision = (collision || this.distanceLinePointOnTorus(xPos, yPos, agent.get_posX(), agent.get_posY(), xVelocity, yVelocity) <= minDistance)
 //                    && agent.getId() != requestingAgent;
 //        }
