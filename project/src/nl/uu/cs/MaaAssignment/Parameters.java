@@ -87,8 +87,10 @@ public class Parameters {
         return _algorithmParams;
     }
 
-    public String toString() {
-        //TODO:
-        return "tostring()";
+    public String toString()
+    {
+        return "Parameters: R1: " + getReward1() + "R2: " + getReward2() + "a.param: " + getAlgorithmParams()[0] + "#agents: " + getNumberOfAgents() + " #actions: " +
+                getNumberOfActions() + "torussize: " + getWidth() + "/" + getHeight() + " speed: " + getSpeed() +
+                " radius: " + getCollisionRadius() + " #rounds: " + getRounds() + " algorithm" + getAlgorithmId();
     }
 }
