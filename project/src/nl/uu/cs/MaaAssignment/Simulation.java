@@ -20,6 +20,7 @@ public class Simulation extends ASubject{
     private final TorusWorld _world;
     private final MaaAssignmentFrame _windowFrame;
     private final Parameters _parameters;
+    private final StatisticsAggregator _statisticsAggregator;
 
 
     public static void main(String[] args){
@@ -82,7 +83,9 @@ public class Simulation extends ASubject{
         }
 
 //        System.out.println("Making Window!");
-        this._windowFrame = new MaaAssignmentFrame(this);
+        _statisticsAggregator =  new StatisticsAggregator(_actions, _agents.size());
+        _windowFrame = new MaaAssignmentFrame(this);
+
     }
 
     public Collection<Agent> getAgents(){
@@ -167,5 +170,10 @@ public class Simulation extends ASubject{
     public void shutDown()
     {
         _windowFrame.dispose();
+    }
+
+    public StatisticsAggregator getStatisticsAggregator()
+    {
+        return _statisticsAggregator;
     }
 }

@@ -28,7 +28,7 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     {
         super();
         _simulation = simulation;
-        StatisticsAggregator.addProcessor(this);
+        _simulation.getStatisticsAggregator().addProcessor(this);
     }
 
     private void initPanel()
