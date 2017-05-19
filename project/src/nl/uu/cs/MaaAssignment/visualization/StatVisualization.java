@@ -5,15 +5,14 @@ import nl.uu.cs.MaaAssignment.StatisticsAggregator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.general.SeriesException;
-import org.jfree.data.time.*;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * Created by duame on 12/05/2017.
@@ -23,7 +22,6 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     private Simulation _simulation;
     private JFreeChart _chart;
     private ChartPanel _chartPanel;
-    //private TimeSeriesCollection _timeSeries;
     private XYSeriesCollection _xySeries;
 
     public StatVisualization(Simulation simulation)
@@ -41,14 +39,6 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     }
 
     private JFreeChart createChart( final XYDataset dataset ) {
-//        final JFreeChart chart =  ChartFactory.createTimeSeriesChart(
-//                "Mean reward of action per time step",
-//                "Time-step",
-//                "Reward",
-//                dataset,
-//                true,
-//                false,
-//                false);
         final JFreeChart chart = ChartFactory.createXYLineChart(
                 "Mean reward of action per time step",
                 "Time-step",
@@ -58,6 +48,7 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
         chart.addSubtitle(new TextTitle(_simulation.getParameters().toString()));
         chart.getXYPlot().getDomainAxis().setVisible(false);
         chart.getXYPlot().getRangeAxis().setRange(0.0, 10.0);
+        chart.getXYPlot().getRangeAxis().setAutoRange(true);
         return chart;
     }
 
@@ -88,8 +79,31 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     }
 
     @Override
-    public void finalize()
+    public void finalize(List<double[]> sums, List<double[]> means, List<double[]> variances)
     {
+        if(_xySeries == null)
+        {
+            _xySeries = new XYSeriesCollection();
+            for(int i = 0; i < means.get(0).length ;i++)
+            {
+                _xySeries.addSeries(new XYSeries("Action" + i));
+            }
+        }
+        try {
+            for(int i = 0; i < means.get(0).length ; i++)
+                for(int j = 0; j < means.size(); j++)
+                {
+                    XYSeries xySeries = _xySeries.getSeries(i);
+                    xySeries.add(xySeries.getItemCount(), means.get(j)[i]);
+                }
+        }
+        catch (SeriesException exception)
+        {
+            //We're too fast. Try again.
+            //append(round, sum, mean, variance);
+            System.err.println("ERROR FINALIZING STATVISUALIZATION!");
+            System.err.println(exception.getMessage());
+        }
         initPanel();
     }
 

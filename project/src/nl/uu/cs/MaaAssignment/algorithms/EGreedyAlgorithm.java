@@ -17,7 +17,7 @@ public class EGreedyAlgorithm implements Algorithm {
     {
         if((parameters == null) || (parameters.length != 1))
         {
-            System.err.print("Amount of parameters specifified for e-greedy is incorrect. Only specify the epsilon");
+            System.err.print("Amount of parameters specified for e-greedy is incorrect. Only specify the epsilon");
             System.exit(1);
         }
 

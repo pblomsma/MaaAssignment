@@ -8,7 +8,7 @@ public class StatisticsAggregator
     public interface Processor
     {
         void append(int round, double[] sum, double[] mean, double variance[]);
-        void finalize();
+        void finalize(List<double[]> sums, List<double[]> means, List<double[]> variances);
     }
 
     //Responsible for accumulating input stats for plot: mean reward per action per time.
@@ -19,10 +19,17 @@ public class StatisticsAggregator
     private final int _agentCount;
     private final static List<Processor> sProcessors = new ArrayList<Processor>();
 
+    private List<double[]> sumList;
+    private List<double[]> meanList;
+    private List<double[]> varianceList;
+
     public StatisticsAggregator(List<Double> actions, int agentCount)
     {
         _actions = actions;
         _agentCount = agentCount;
+        sumList = new ArrayList<>();
+        meanList = new ArrayList<>();
+        varianceList = new ArrayList<>();
     }
 
     public static void addProcessor(Processor processor)
@@ -88,7 +95,10 @@ public class StatisticsAggregator
             mean[action] = actionMean;
             variance[action] = actionVariance;
         }
-        updateProcessors(_round, sum,mean, variance);
+        sumList.add(sum);
+        meanList.add(mean);
+        varianceList.add(variance);
+        //updateProcessors(_round, sum,mean, variance);
     }
 
     private void updateProcessors(int round, double[] sum, double[] mean, double variance[])
@@ -103,7 +113,10 @@ public class StatisticsAggregator
     {
         for(Processor processor: sProcessors)
         {
-            processor.finalize();
+            for (int i = 0; i < meanList.size(); i++) {
+                updateProcessors(i, sumList.get(i), meanList.get(i), varianceList.get(i));
+            }
+            processor.finalize(sumList, meanList, varianceList);
         }
     }
 }

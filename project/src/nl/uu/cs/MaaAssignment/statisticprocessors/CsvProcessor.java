@@ -2,6 +2,8 @@ package nl.uu.cs.MaaAssignment.statisticprocessors;
 
 import nl.uu.cs.MaaAssignment.StatisticsAggregator;
 
+import java.util.List;
+
 /**
  * Created by Peter on 13-5-2017.
  */
@@ -17,7 +19,7 @@ public class CsvProcessor implements StatisticsAggregator.Processor
     }
 
     @Override
-    public void finalize() {
+    public void finalize(List<double[]> sums, List<double[]> means, List<double[]> variances) {
 
     }
 }

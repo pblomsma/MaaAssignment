@@ -101,7 +101,6 @@ public class Simulation extends ASubject{
         StatisticsAggregator statistics = new StatisticsAggregator(_actions, _agents.size());
 
         for (int round = 0; round < _parameters.getRounds(); round++) {
-            long roundStartTime = System.currentTimeMillis();
             statistics.startRound(round);
             System.out.println("Round: " + round);
 
