@@ -8,6 +8,7 @@ public class StatisticsAggregator
     public interface Processor
     {
         void append(int round, double[] sum, double[] mean, double variance[]);
+        void finalize();
     }
 
     //Responsible for accumulating input stats for plot: mean reward per action per time.
@@ -43,6 +44,10 @@ public class StatisticsAggregator
     public void finalize()
     {
         _rewards = new List[_actions.size()];
+
+        processResults();
+
+        finalizeProcessors();
     }
 
     public void addReward(int action, double reward)
@@ -91,6 +96,14 @@ public class StatisticsAggregator
         for(Processor processor: sProcessors)
         {
             processor.append(round,sum,mean,variance);
+        }
+    }
+
+    private void finalizeProcessors()
+    {
+        for(Processor processor: sProcessors)
+        {
+            processor.finalize();
         }
     }
 }

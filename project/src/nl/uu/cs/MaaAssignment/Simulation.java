@@ -103,6 +103,7 @@ public class Simulation extends ASubject{
         for (int round = 0; round < _parameters.getRounds(); round++) {
             long roundStartTime = System.currentTimeMillis();
             statistics.startRound(round);
+            System.out.println("Round: " + round);
 
             Map<Integer, Integer> decisions = new HashMap<>();
 
@@ -135,7 +136,7 @@ public class Simulation extends ASubject{
 
 
     private boolean putOnPosition(Agent agent) {
-        return _world.addAgent(agent.getId(), agent, agent.get_posX(), agent.get_posY());
+        return _world.addAgent(agent, agent.get_posX(), agent.get_posY());
     }
 
     private boolean simulationStep(Agent agent, int action) {
@@ -145,7 +146,7 @@ public class Simulation extends ASubject{
         double xVelocity = Math.cos(direction) * magnitude;
         double yVelocity = Math.sin(direction) * magnitude;
 
-        return _world.moveAgent(agent.getId(), xVelocity, yVelocity);
+        return _world.moveAgent(agent, xVelocity, yVelocity);
      }
 
     private Algorithm getAlgorithm(int identifier) {

@@ -7,6 +7,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.*;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -65,27 +66,31 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
     {
        if(_xySeries == null)
         {
-            //_timeSeries = new TimeSeriesCollection();
             _xySeries = new XYSeriesCollection();
             for(int i = 0; i<mean.length ;i++)
             {
-                //_timeSeries.addSeries(new TimeSeries( "Action" + i ));
                 _xySeries.addSeries(new XYSeries("Action" + i));
             }
-
-            initPanel();
         }
+        try {
+            for(int i = 0; i < mean.length ; i++)
+            {
+                XYSeries xySeries = _xySeries.getSeries(i);
+                xySeries.add(xySeries.getItemCount(), mean[i]);
+            }
+            updateChart();
+       }
+       catch (SeriesException exception)
+       {
+           //We're to fast. Try again.
+           append(round, sum, mean, variance);
+       }
+    }
 
-        //RegularTimePeriod time = new Millisecond();
-
-        for(int i = 0; i < mean.length ; i++)
-        {
-//            TimeSeries timeSeries = _timeSeries.getSeries(i);
-//            timeSeries.add(time, mean[i]);
-            XYSeries xySeries = _xySeries.getSeries(i);
-            xySeries.add(xySeries.getItemCount(), mean[i]);
-        }
-        updateChart();
+    @Override
+    public void finalize()
+    {
+        initPanel();
     }
 
     public JFreeChart get_chart() {
