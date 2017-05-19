@@ -6,6 +6,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.*;
 import org.jfree.data.xy.XYDataset;
 
@@ -60,18 +61,27 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
             {
                 _timeSeries.addSeries(new TimeSeries( "Action" + i ));
             }
-
-            initPanel();
         }
 
         RegularTimePeriod time = new Millisecond();
 
-        for(int i = 0; i < mean.length ; i++)
-        {
-            TimeSeries timeSeries = _timeSeries.getSeries(i);
-            timeSeries.add(time, mean[i]);
-        }
-        updateChart();
+       try {
+           for (int i = 0; i < mean.length; i++) {
+               TimeSeries timeSeries = _timeSeries.getSeries(i);
+               timeSeries.add(time, mean[i]);
+           }
+       }
+       catch (SeriesException exception)
+       {
+           //We're to fast. Try again.
+           append(round, sum, mean, variance);
+       }
+    }
+
+    @Override
+    public void finalize()
+    {
+        initPanel();
     }
 
     public JFreeChart get_chart() {

@@ -15,4 +15,9 @@ public class CsvProcessor implements StatisticsAggregator.Processor
             System.out.println(round + ";" + i + ";" + sum[i] + ";" + mean[i] + ";" + variance[i]);
         }
     }
+
+    @Override
+    public void finalize() {
+
+    }
 }
