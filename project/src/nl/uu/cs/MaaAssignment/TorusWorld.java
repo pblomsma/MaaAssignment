@@ -3,6 +3,8 @@ package nl.uu.cs.MaaAssignment;
 import com.sun.javafx.geom.Vec2d;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TorusWorld
 {
@@ -18,7 +20,7 @@ public class TorusWorld
     private double _radius;
     private final double _maxMovingDistance;
 
-    private HashMap<Integer, Agent> _agents;
+    private Map<Integer, Agent> _agents;
 
     public TorusWorld(double _width, double _height, double _radius)
     {
@@ -26,7 +28,7 @@ public class TorusWorld
         this._height = _height;
         this._radius = _radius;
         _maxMovingDistance = Math.min(_width, _height) / 2.0;
-        this._agents = new HashMap<Integer, Agent>();
+        this._agents = new TreeMap<Integer, Agent>();
     }
 
     public boolean addAgent(int id, Agent agent, double posX, double posY)
