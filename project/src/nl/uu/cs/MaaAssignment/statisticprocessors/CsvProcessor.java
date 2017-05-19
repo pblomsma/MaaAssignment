@@ -9,17 +9,19 @@ import java.util.List;
  */
 public class CsvProcessor implements StatisticsAggregator.Processor
 {
-    @Override
-    public void append(int round, double[] sum, double[] mean, double[] variance)
-    {
-        for(int i = 0; i < sum.length; i++)
-        {
-            System.out.println(round + ";" + i + ";" + sum[i] + ";" + mean[i] + ";" + variance[i]);
-        }
-    }
+//    @Override
+//    public void append(int round, double[] sum, double[] mean, double[] variance)
+//    {
+//        for(int i = 0; i < sum.length; i++)
+//        {
+//            System.out.println(round + ";" + i + ";" + sum[i] + ";" + mean[i] + ";" + variance[i]);
+//        }
+//    }
+//
+//
 
     @Override
-    public void finalize(List<double[]> sums, List<double[]> means, List<double[]> variances) {
-
+    public void finalize(List<Double>[] meansPerActionPerRound) {
+        //TODO:
     }
 }
