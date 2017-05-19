@@ -91,9 +91,9 @@ public class Bootstrapper {
         int actions = 10;
         double speed = 3;
         double collisionRadius = 1;
-        double width = 10;
-        double height = 10;
-        int roundAmount = 10;
+        double width = 1000;
+        double height = 1000;
+        int roundAmount = 100000;
         int algorithmID = 0;
 
 
@@ -117,9 +117,12 @@ public class Bootstrapper {
                             new Object[]{epsilon}
                     );
 
+                    long simulationStart = System.currentTimeMillis();
+                    System.out.println("Starting simulation!");
                     simulation.start();
                     saveSimulation(simulation);
                     simulation.shutDown();
+                    System.out.println("Simulation run took : " + (System.currentTimeMillis() - simulationStart) + " ms");
                 }
             }
         }
@@ -135,9 +138,6 @@ public class Bootstrapper {
 
         Date timeStamp = Date.from(Instant.now());
         System.out.println("Current TimeStamp : " + timeStamp);
-
-        System.out.println("Starting simulation!");
-        simulation.start();
 
         JFreeChart chart = simulation.getWindowFrame().getStatPanel().get_chart();
         System.out.println(chart);
