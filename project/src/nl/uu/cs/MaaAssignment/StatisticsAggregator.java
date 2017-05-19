@@ -7,29 +7,24 @@ public class StatisticsAggregator
 {
     public interface Processor
     {
-        void append(int round, double[] sum, double[] mean, double variance[]);
-        void finalize(List<double[]> sums, List<double[]> means, List<double[]> variances);
+        void finalize(List<double[]> means);
     }
 
     //Responsible for accumulating input stats for plot: mean reward per action per time.
 
     private final List<Double> _actions;
-    private List<Double>[] _rewards;
+    private double[] _rewards;
     private int _round = -1;
     private final int _agentCount;
     private final static List<Processor> _processors = new ArrayList<Processor>();
 
-    private List<double[]> sumList;
-    private List<double[]> meanList;
-    private List<double[]> varianceList;
+    private List<double[]> _meanListPerRound;
 
     public StatisticsAggregator(List<Double> actions, int agentCount)
     {
         _actions = actions;
         _agentCount = agentCount;
-        sumList = new ArrayList<>();
-        meanList = new ArrayList<>();
-        varianceList = new ArrayList<>();
+        _meanListPerRound = new ArrayList<>();
     }
 
     public void addProcessor(Processor processor)
@@ -45,78 +40,37 @@ public class StatisticsAggregator
         }
         _round = i;
 
-        _rewards = new List[_actions.size()];
+        _rewards = new double[_actions.size()];
     }
 
     public void finalize()
     {
-        _rewards = new List[_actions.size()];
-
         processResults();
-
         finalizeProcessors();
     }
 
     public void addReward(int action, double reward)
     {
-        if(_rewards[action] == null)
-        {
-            _rewards[action] = new ArrayList<Double>();
-        }
-        _rewards[action].add(reward);
+        _rewards[action] += reward;
     }
 
+    //Gets executed after every round.
     private void processResults()
     {
-        final double sum[] = new double[_rewards.length];
-        final double mean[] = new double[_rewards.length];
-        final double variance[] = new double[_rewards.length];
+        final double meanPerAction[] = new double[_rewards.length];
 
         for(int action = 0; action < _rewards.length ; action++)
         {
-            double actionSum = 0;
-            double actionMean;
-            double actionVariance = 0;
-
-            if(_rewards[action] != null)
-            {
-                for(Double d: _rewards[action])
-                    actionSum += d;
-            }
-
-            actionMean = (actionSum > 0? actionSum / _agentCount : 0 );
-
-            if(_rewards[action] != null)
-            {
-                for(Double d: _rewards[action])
-                    actionVariance += Math.pow(actionMean - d, 2);
-            }
-            sum[action] = actionSum;
-            mean[action] = actionMean;
-            variance[action] = actionVariance;
+            meanPerAction[action] = (_rewards[action] > 0? _rewards[action] / (double)_agentCount : 0 );
         }
-        sumList.add(sum);
-        meanList.add(mean);
-        varianceList.add(variance);
-        //updateProcessors(_round, sum,mean, variance);
-    }
-
-    private void updateProcessors(int round, double[] sum, double[] mean, double variance[])
-    {
-        for(Processor processor: _processors)
-        {
-            processor.append(round,sum,mean,variance);
-        }
+        _meanListPerRound.add(meanPerAction);
     }
 
     private void finalizeProcessors()
     {
         for(Processor processor: _processors)
         {
-            for (int i = 0; i < meanList.size(); i++) {
-                updateProcessors(i, sumList.get(i), meanList.get(i), varianceList.get(i));
-            }
-            processor.finalize(sumList, meanList, varianceList);
+            processor.finalize(_meanListPerRound);
         }
     }
 }

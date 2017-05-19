@@ -52,34 +52,34 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
         return chart;
     }
 
-    @Override
-    public void append(int round, double[] sum, double[] mean, double[] variance)
-    {
-       if(_xySeries == null)
-        {
-            _xySeries = new XYSeriesCollection();
-            for(int i = 0; i<mean.length ;i++)
-            {
-                _xySeries.addSeries(new XYSeries("Action" + i));
-            }
-        }
-        try {
-            for(int i = 0; i < mean.length ; i++)
-            {
-                XYSeries xySeries = _xySeries.getSeries(i);
-                xySeries.add(xySeries.getItemCount(), mean[i]);
-            }
-            updateChart();
-       }
-       catch (SeriesException exception)
-       {
-           //We're to fast. Try again.
-           append(round, sum, mean, variance);
-       }
-    }
+//    @Override
+//    public void append(int round, double[] sum, double[] mean, double[] variance)
+//    {
+//       if(_xySeries == null)
+//        {
+//            _xySeries = new XYSeriesCollection();
+//            for(int i = 0; i<mean.length ;i++)
+//            {
+//                _xySeries.addSeries(new XYSeries("Action" + i));
+//            }
+//        }
+//        try {
+//            for(int i = 0; i < mean.length ; i++)
+//            {
+//                XYSeries xySeries = _xySeries.getSeries(i);
+//                xySeries.add(xySeries.getItemCount(), mean[i]);
+//            }
+//            updateChart();
+//       }
+//       catch (SeriesException exception)
+//       {
+//           //We're to fast. Try again.
+//           append(round, sum, mean, variance);
+//       }
+//    }
 
     @Override
-    public void finalize(List<double[]> sums, List<double[]> means, List<double[]> variances)
+    public void finalize(List<double[]> means)
     {
         if(_xySeries == null)
         {
