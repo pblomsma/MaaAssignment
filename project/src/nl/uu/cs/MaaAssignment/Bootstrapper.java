@@ -93,15 +93,15 @@ public class Bootstrapper {
         double collisionRadius = 1;
         double width = 1000;
         double height = 1000;
-        int roundAmount = 100000;
+        int roundAmount = 1000000;
         int algorithmID = 0;
 
 
-        for(double rewardOne = 0; rewardOne < 10; rewardOne++)
+        for(double rewardOne = 1; rewardOne < 10; rewardOne++)
         {
-            for(double rewardTwo = 0; rewardTwo < 10; rewardTwo++)
+            for(double rewardTwo = 1; rewardTwo < 10; rewardTwo++)
             {
-                for(double epsilon = 0.1; epsilon < 0.99; epsilon += 0.1)
+                for(double epsilon = 0.1; epsilon < 0.9; epsilon += 0.1)
                 {
                     Simulation simulation = new Simulation(
                             agents ,
@@ -117,6 +117,11 @@ public class Bootstrapper {
                             new Object[]{epsilon}
                     );
 
+                    if(isAlreadySimulated(simulation.getParameters()))
+                    {
+                        continue;
+                    }
+
                     long simulationStart = System.currentTimeMillis();
                     System.out.println("Starting simulation!");
                     simulation.start();
@@ -130,23 +135,42 @@ public class Bootstrapper {
 
     public static void saveSimulation(Simulation simulation)
     {
-        Path currentRelativePath = Paths.get("");
-        File outputFolder = new File(currentRelativePath + "/simOutput");
-        if(outputFolder.mkdir() && outputFolder.exists())
-            System.out.println("Folder for simulation output exists!");
-
-
-        Date timeStamp = Date.from(Instant.now());
-        System.out.println("Current TimeStamp : " + timeStamp);
-
         JFreeChart chart = simulation.getWindowFrame().getStatPanel().get_chart();
-        System.out.println(chart);
+
         try {
-            File toSave = new File(outputFolder, timeStamp.toInstant().getEpochSecond() + "_" + timeStamp.toInstant().getNano() + ".jpg");
+            File toSave = getFileName(simulation.getParameters());
             if(toSave.createNewFile())
                 ChartUtilities.saveChartAsJPEG( toSave, chart, 1920, 1080);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean isAlreadySimulated(Parameters parameters)
+    {
+        return getFileName(parameters).exists();
+    }
+
+    private static File getFileName(Parameters parameters)
+    {
+        Path currentRelativePath = Paths.get("");
+        File outputFolder = new File(currentRelativePath.toAbsolutePath() +  "/output");
+        if(outputFolder.mkdir() && outputFolder.exists())
+        {
+            System.out.println("Folder for simulation output exists!");
+        }
+
+        return new File(outputFolder + "/" + getConfigurationName(parameters) + ".jpg");
+    }
+
+
+    /**
+     * Creates filename based on parameters, such that parametersets that are the same map to the same filename.
+     */
+    private static String getConfigurationName(Parameters parameters)
+    {
+        return "" + parameters.getAlgorithmId() + parameters.getReward1() + parameters.getReward2() + parameters.getRounds() +
+                parameters.getCollisionRadius() + parameters.getSpeed() + parameters.getHeight() + parameters.getWidth() +
+                parameters.getRounds() + parameters.getNumberOfActions() + parameters.getNumberOfAgents() +  parameters.getAlgorithmParams()[0];
     }
 }
