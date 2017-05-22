@@ -16,7 +16,7 @@ public class StatisticsAggregator
     private double[] _rewards;
     private int _round = -1;
     private final int _agentCount;
-    private final static List<Processor> _processors = new ArrayList<Processor>();
+    private final List<Processor> _processors = new ArrayList<Processor>();
 
     private List<Double>[] _meanListPerRound;
 

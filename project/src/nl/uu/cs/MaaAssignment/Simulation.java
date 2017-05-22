@@ -101,10 +101,8 @@ public class Simulation extends ASubject{
     }
 
     public void start() {
-        StatisticsAggregator statistics = new StatisticsAggregator(_actions, _agents.size());
-
         for (int round = 0; round < _parameters.getRounds(); round++) {
-            statistics.startRound(round);
+            _statisticsAggregator.startRound(round);
             System.out.println("Round: " + round);
 
             Map<Integer, Integer> decisions = new HashMap<>();
@@ -129,11 +127,11 @@ public class Simulation extends ASubject{
                 }
 
                 agent.reward(reward, round);
-                statistics.addReward(decisions.get(i), reward);
+                _statisticsAggregator.addReward(decisions.get(i), reward);
             }
             super.notifyAllObservers();
         }
-        statistics.finalize();
+        _statisticsAggregator.finalize();
     }
 
 

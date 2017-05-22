@@ -56,7 +56,8 @@ public class StatVisualization extends JPanel implements StatisticsAggregator.Pr
         for (int action = 0; action < meansPerRoundPerAction.length; action++) {
             XYSeries seriesForAction = new XYSeries("Action" + action);
 
-            for (int round = 0; round < meansPerRoundPerAction[action].size(); round++) {
+            for (int round = 0; round < meansPerRoundPerAction[action].size(); round++)
+            {
                 seriesForAction.add(round, meansPerRoundPerAction[action].get(round));
             }
             dataCollection.addSeries(seriesForAction);
