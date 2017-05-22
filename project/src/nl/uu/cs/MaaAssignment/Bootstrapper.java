@@ -5,6 +5,7 @@ import org.jfree.chart.JFreeChart;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -15,6 +16,8 @@ import java.util.Date;
  * Created by duame on 16/05/2017.
  */
 public class Bootstrapper {
+
+    private final static String sDefaultExtension = ".jpg";
 
     public static void main(String[] args) {
         playingAround();
@@ -90,7 +93,7 @@ public class Bootstrapper {
         int agents = 10;
         int actions = 10;
         double speed = 3;
-        double collisionRadius = 1;
+        double collisionRadius = 10;
         double width = 1000;
         double height = 1000;
         int roundAmount = 1000000;
@@ -135,15 +138,28 @@ public class Bootstrapper {
 
     public static void saveSimulation(Simulation simulation)
     {
+        //Chart
         JFreeChart chart = simulation.getWindowFrame().getStatPanel().get_chart();
 
         try {
-            File toSave = getFileName(simulation.getParameters());
+            File toSave = getFileName(simulation.getParameters(), ".jpg");
             if(toSave.createNewFile())
                 ChartUtilities.saveChartAsJPEG( toSave, chart, 1920, 1080);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Csv
+//        try {
+//            File toSave = getFileName(simulation.getParameters(), ".csv");
+//            if(toSave.createNewFile())
+//                try(  PrintWriter out = new PrintWriter( toSave )  ){
+//                    out.println( simulation.getCsv() );
+//                }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
     }
 
     private static boolean isAlreadySimulated(Parameters parameters)
@@ -153,6 +169,11 @@ public class Bootstrapper {
 
     private static File getFileName(Parameters parameters)
     {
+        return getFileName(parameters, sDefaultExtension);
+    }
+
+    private static File getFileName(Parameters parameters, String extension)
+    {
         Path currentRelativePath = Paths.get("");
         File outputFolder = new File(currentRelativePath.toAbsolutePath() +  "/output");
         if(outputFolder.mkdir() && outputFolder.exists())
@@ -160,7 +181,7 @@ public class Bootstrapper {
             System.out.println("Folder for simulation output exists!");
         }
 
-        return new File(outputFolder + "/" + getConfigurationName(parameters) + ".jpg");
+        return new File(outputFolder + "/" + getConfigurationName(parameters) + extension);
     }
 
 

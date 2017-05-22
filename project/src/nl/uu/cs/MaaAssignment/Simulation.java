@@ -5,6 +5,7 @@ import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.EGreedyAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.OivAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
+import nl.uu.cs.MaaAssignment.statisticprocessors.CsvProcessor;
 import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
 
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.awt.event.WindowEvent;
 import java.util.*;
 import java.util.List;
 
-public class Simulation extends ASubject{
+public class Simulation extends ASubject {
 
     private final List<Double> _actions;
     private final Map<Integer, Agent> _agents;
@@ -21,33 +22,32 @@ public class Simulation extends ASubject{
     private final MaaAssignmentFrame _windowFrame;
     private final Parameters _parameters;
     private final StatisticsAggregator _statisticsAggregator;
+    private final CsvProcessor _csvProcessor;
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Simulation simulation = new Simulation(
-            Integer.parseInt(args[0]),                      // number of agents
-            Integer.parseInt(args[1]),                      // number of actions
-            Double.parseDouble(args[2]),                    // speed
-            Double.parseDouble(args[3]),                    // collision radius
-            Double.parseDouble(args[4]),                    // width
-            Double.parseDouble(args[5]),                    // height
-            Double.parseDouble(args[6]),                    // reward 1
-            Double.parseDouble(args[7]),                    // reward 2
-            Integer.parseInt(args[8]),                      // rounds
-            Integer.parseInt(args[9]),                      // algorithm ID
-            Arrays.copyOfRange(args, 10, args.length)       // algorithm params
+                Integer.parseInt(args[0]),                      // number of agents
+                Integer.parseInt(args[1]),                      // number of actions
+                Double.parseDouble(args[2]),                    // speed
+                Double.parseDouble(args[3]),                    // collision radius
+                Double.parseDouble(args[4]),                    // width
+                Double.parseDouble(args[5]),                    // height
+                Double.parseDouble(args[6]),                    // reward 1
+                Double.parseDouble(args[7]),                    // reward 2
+                Integer.parseInt(args[8]),                      // rounds
+                Integer.parseInt(args[9]),                      // algorithm ID
+                Arrays.copyOfRange(args, 10, args.length)       // algorithm params
         );
         simulation.start();
     }
 
-    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams)
-    {
-            this(new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius,width, height, reward1, reward2, rounds, algorithmId, algorithmParams ));
+    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
+        this(new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius, width, height, reward1, reward2, rounds, algorithmId, algorithmParams));
     }
 
-    public Simulation(Parameters parameters)
-        {
-            _parameters = parameters;
+    public Simulation(Parameters parameters) {
+        _parameters = parameters;
 
 
         _world = new TorusWorld(parameters.getWidth(), parameters.getHeight(), parameters.getCollisionRadius());
@@ -83,17 +83,21 @@ public class Simulation extends ASubject{
         }
 
 //        System.out.println("Making Window!");
-        _statisticsAggregator =  new StatisticsAggregator(_actions, _agents.size());
+        _statisticsAggregator = new StatisticsAggregator(_actions, _agents.size());
+        _csvProcessor = new CsvProcessor();
+        _statisticsAggregator.addProcessor(_csvProcessor);
+
         _windowFrame = new MaaAssignmentFrame(this);
+
 
     }
 
-    public Collection<Agent> getAgents(){
+    public Collection<Agent> getAgents() {
         return _agents.values();
     }
 
-    public Dimension getWorldSize(){
-        return new Dimension((int)_parameters.getWidth(), (int)_parameters.getHeight());
+    public Dimension getWorldSize() {
+        return new Dimension((int) _parameters.getWidth(), (int) _parameters.getHeight());
     }
 
     public MaaAssignmentFrame getWindowFrame() {
@@ -147,11 +151,10 @@ public class Simulation extends ASubject{
         double yVelocity = Math.sin(direction) * magnitude;
 
         return _world.moveAgent(agent, xVelocity, yVelocity);
-     }
+    }
 
     private Algorithm getAlgorithm(int identifier) {
-        switch (identifier)
-        {
+        switch (identifier) {
             case 0:
                 return new EGreedyAlgorithm();
             case 1:
@@ -165,13 +168,16 @@ public class Simulation extends ASubject{
         return _parameters;
     }
 
-    public void shutDown()
-    {
+    public void shutDown() {
         _windowFrame.dispose();
     }
 
-    public StatisticsAggregator getStatisticsAggregator()
-    {
+    public StatisticsAggregator getStatisticsAggregator() {
         return _statisticsAggregator;
+    }
+
+    public String getCsv()
+    {
+        return _csvProcessor.getCsvString();
     }
 }
