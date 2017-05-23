@@ -68,7 +68,7 @@ public class EGreedyAlgorithm implements Algorithm {
     @Override
     public void reward(double reward, int round)
     {
-        int action = _actionTrail.get(round);
+        int action = _actionTrail.remove(round);
 
         _scores[action].n++;
         _scores[action].q += (1.0 / _scores[action].n) * (reward - _scores[action].q);
