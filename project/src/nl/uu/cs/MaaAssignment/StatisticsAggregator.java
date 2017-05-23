@@ -1,5 +1,8 @@
 package nl.uu.cs.MaaAssignment;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,29 +19,22 @@ public class StatisticsAggregator
     private double[] _rewards;
     private int _round = -1;
     private final int _agentCount;
-    private final List<Processor> _processors = new ArrayList<Processor>();
+    private PrintWriter _printWriter;
 
-    private List<Double>[] _meanListPerRound;
-
-    public StatisticsAggregator(List<Double> actions, int agentCount)
-    {
+    StatisticsAggregator(List<Double> actions, int agentCount, String file) throws IOException {
         _actions = actions;
         _agentCount = agentCount;
-        _meanListPerRound = (ArrayList<Double>[])new ArrayList[_actions.size()];
 
-        //init
-        for(int i = 0; i < _actions.size(); i++)
-        {
-            _meanListPerRound[i] = new ArrayList<Double>();
-        }
+            File outputFile = new File(file);
+            if(outputFile.createNewFile())
+            {
+                _printWriter = new PrintWriter( outputFile);
+                _printWriter.append("round;action;mean");
+            }
+
     }
 
-    public void addProcessor(Processor processor)
-    {
-        _processors.add(processor);
-    }
-
-    public void startRound(int i)
+    void startRound(int i)
     {
         if(_round > -1)
         {
@@ -52,10 +48,9 @@ public class StatisticsAggregator
     public void finalize()
     {
         processResults();
-        finalizeProcessors();
     }
 
-    public void addReward(int action, double reward)
+    void addReward(int action, double reward)
     {
         _rewards[action] += reward;
     }
@@ -66,15 +61,8 @@ public class StatisticsAggregator
         for(int action = 0; action < _rewards.length ; action++)
         {
             //if rewards = 0, 0 else reward/agents
-            _meanListPerRound[action].add((_rewards[action] > 0? _rewards[action] / (double)_agentCount : 0 ));
-        }
-    }
-
-    private void finalizeProcessors()
-    {
-        for(Processor processor: _processors)
-        {
-            processor.finalize(_meanListPerRound);
+            _printWriter.append(System.getProperty("line.separator"));
+            _printWriter.append("" + _round + ";" + "Action " + action + ";" + (_rewards[action] > 0? _rewards[action] / (double)_agentCount : 0 ));
         }
     }
 }
