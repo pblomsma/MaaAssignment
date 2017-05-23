@@ -19,22 +19,15 @@ public class CsvProcessor implements StatisticsAggregator.Processor
     public void finalize(List<Double>[] meansPerRoundPerAction)
     {
         //Print headers
-        _csvBuilder.append("round;");
-        for (int action = 0; action < meansPerRoundPerAction.length; action++) {
-            {
-                _csvBuilder.append("Mean Action " + action + ";");
-            }
-        }
+        _csvBuilder.append("round;action;mean");
 
         //Print data
         for (int round = 0; round < meansPerRoundPerAction[0].size(); round++)
         {
-            _csvBuilder.append(System.getProperty("line.separator"));
-            _csvBuilder.append(round + ";");
-
             for (int action = 0; action < meansPerRoundPerAction.length; action++) {
                     {
-                        _csvBuilder.append(meansPerRoundPerAction[action].get(round) + ";");
+                        _csvBuilder.append(System.getProperty("line.separator"));
+                        _csvBuilder.append("" + round + ";" + "Action " + action + ";" + meansPerRoundPerAction[action].get(round));
                     }
             }
         }
