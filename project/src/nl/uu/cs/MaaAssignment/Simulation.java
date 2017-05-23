@@ -5,27 +5,23 @@ import nl.uu.cs.MaaAssignment.algorithms.Algorithm;
 import nl.uu.cs.MaaAssignment.algorithms.EGreedyAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.OivAlgorithm;
 import nl.uu.cs.MaaAssignment.algorithms.TestAlgorithm;
-import nl.uu.cs.MaaAssignment.statisticprocessors.CsvProcessor;
-import nl.uu.cs.MaaAssignment.visualization.MaaAssignmentFrame;
-
 import java.awt.*;
-import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class Simulation extends ASubject {
+public class Simulation {
 
     private final List<Double> _actions;
     private final Map<Integer, Agent> _agents;
 
     private final TorusWorld _world;
-    private final MaaAssignmentFrame _windowFrame;
     private final Parameters _parameters;
     private final StatisticsAggregator _statisticsAggregator;
-    private final CsvProcessor _csvProcessor;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Simulation simulation = new Simulation(
                 Integer.parseInt(args[0]),                      // number of agents
                 Integer.parseInt(args[1]),                      // number of actions
@@ -37,16 +33,21 @@ public class Simulation extends ASubject {
                 Double.parseDouble(args[7]),                    // reward 2
                 Integer.parseInt(args[8]),                      // rounds
                 Integer.parseInt(args[9]),                      // algorithm ID
-                Arrays.copyOfRange(args, 10, args.length)       // algorithm params
+                Arrays.copyOfRange(args, 10, args.length), null       // algorithm params
         );
         simulation.start();
     }
 
-    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams) {
-        this(new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius, width, height, reward1, reward2, rounds, algorithmId, algorithmParams));
+    public static Parameters createParameters(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams)
+    {
+        return new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius, width, height, reward1, reward2, rounds, algorithmId, algorithmParams);
     }
 
-    public Simulation(Parameters parameters) {
+    public Simulation(int numberOfAgents, int numberOfActions, double speed, double collisionRadius, double width, double height, double reward1, double reward2, int rounds, int algorithmId, Object[] algorithmParams, File  file)throws IOException {
+        this(new Parameters(numberOfAgents, numberOfActions, speed, collisionRadius, width, height, reward1, reward2, rounds, algorithmId, algorithmParams), file);
+    }
+
+    public Simulation(Parameters parameters, File file) throws IOException {
         _parameters = parameters;
 
 
@@ -64,7 +65,6 @@ public class Simulation extends ASubject {
 
         _agents = new HashMap<>();
 
-//        System.out.println("Making Agents!");
         for (int i = 0; i < parameters.getNumberOfAgents(); i++) {
             Agent agent = new Agent(getAlgorithm(parameters.getAlgorithmId()).initialize(_actions.size(), parameters.getAlgorithmParams()), i, parameters.getCollisionRadius());
 
@@ -76,20 +76,12 @@ public class Simulation extends ASubject {
             }
             while (!putOnPosition(agent));
 
-//            System.out.println("Placing Agent " + i + " !");
             agent.setPosition(posX, posY);
 
             _agents.put(i, agent);
         }
 
-//        System.out.println("Making Window!");
-        _statisticsAggregator = new StatisticsAggregator(_actions, _agents.size());
-        _csvProcessor = new CsvProcessor();
-        _statisticsAggregator.addProcessor(_csvProcessor);
-
-        _windowFrame = new MaaAssignmentFrame(this);
-
-
+        _statisticsAggregator = new StatisticsAggregator(_actions, _agents.size(), file);
     }
 
     public Collection<Agent> getAgents() {
@@ -100,14 +92,14 @@ public class Simulation extends ASubject {
         return new Dimension((int) _parameters.getWidth(), (int) _parameters.getHeight());
     }
 
-    public MaaAssignmentFrame getWindowFrame() {
-        return _windowFrame;
-    }
-
-    public void start() {
+    public void start()
+    {
         for (int round = 0; round < _parameters.getRounds(); round++) {
             _statisticsAggregator.startRound(round);
-            System.out.println("Round: " + round);
+
+            if((round % 1000000) == 0 ) {
+                System.out.println("Round: " + round + " Time = " + System.currentTimeMillis());
+            }
 
             Map<Integer, Integer> decisions = new HashMap<>();
 
@@ -133,7 +125,6 @@ public class Simulation extends ASubject {
                 agent.reward(reward, round);
                 _statisticsAggregator.addReward(decisions.get(i), reward);
             }
-            super.notifyAllObservers();
         }
         _statisticsAggregator.finalize();
     }
@@ -168,16 +159,4 @@ public class Simulation extends ASubject {
         return _parameters;
     }
 
-    public void shutDown() {
-        _windowFrame.dispose();
-    }
-
-    public StatisticsAggregator getStatisticsAggregator() {
-        return _statisticsAggregator;
-    }
-
-    public String getCsv()
-    {
-        return _csvProcessor.getCsvString();
-    }
 }

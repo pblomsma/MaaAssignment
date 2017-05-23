@@ -21,14 +21,13 @@ public class StatisticsAggregator
     private final int _agentCount;
     private PrintWriter _printWriter;
 
-    StatisticsAggregator(List<Double> actions, int agentCount, String file) throws IOException {
+    StatisticsAggregator(List<Double> actions, int agentCount, File file) throws IOException {
         _actions = actions;
         _agentCount = agentCount;
 
-            File outputFile = new File(file);
-            if(outputFile.createNewFile())
+            if(file.createNewFile())
             {
-                _printWriter = new PrintWriter( outputFile);
+                _printWriter = new PrintWriter( file);
                 _printWriter.append("round;action;mean");
             }
 

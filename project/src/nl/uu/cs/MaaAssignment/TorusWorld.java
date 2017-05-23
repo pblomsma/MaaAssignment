@@ -6,13 +6,6 @@ import java.util.*;
 
 public class TorusWorld
 {
-
-    // TODO ; - Dustin's Class desu
-    // TODO : Visualization of World and Plot Mean reward of Action per Time Step
-    // TODO : Requires connection to simulation for information, Observer Pattern?
-    // TODO : Improve collision to consider movement over lines
-
-
     private final double _width;
     private final double _height;
     private final double _radius;
@@ -57,13 +50,6 @@ public class TorusWorld
         double lineLength       = distanceOnTorus(lineStartX, lineStartY, lineEndX, lineEndY);
         double startToPointDistance = distanceOnTorus(pointX, pointY, lineStartX, lineStartY);
         double endToPointDistance   = distanceOnTorus(pointX, pointY, lineEndX, lineEndY);
-
-        if(lineLength > _maxMovingDistance)
-        {
-            //Moving distance should be equal to speed.
-            System.err.println("The distance (" + lineLength + ")is to big in comparison with the fieldsize(" + _width + "/"+ _height + "). Correct collision detection is not guaranteed!");
-        }
-
         double perimeter = 0.5 * ( lineLength + startToPointDistance + endToPointDistance);
         double doubleTriangleSize = 2 * Math.sqrt(perimeter * (perimeter - lineLength) * (perimeter - startToPointDistance) * (perimeter - endToPointDistance));
         return doubleTriangleSize / lineLength;
