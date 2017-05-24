@@ -15,5 +15,5 @@ outputfile <- paste(trimws(args[1]), "_Rplot.jpg")
 
 print(outputfile)
 
-jpeg(filename = outputfile, width = 2000, height = 1500,)
+jpeg(filename = outputfile, width = 2000, height = 1500)
 print(currentplot)

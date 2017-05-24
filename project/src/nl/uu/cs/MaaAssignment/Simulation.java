@@ -94,11 +94,13 @@ public class Simulation {
 
     public void start()
     {
+        long startTime =  System.currentTimeMillis();
         for (int round = 0; round < _parameters.getRounds(); round++) {
             _statisticsAggregator.startRound(round);
 
             if((round % 1000000) == 0 ) {
-                System.out.println("Round: " + round + " Time = " + System.currentTimeMillis());
+                System.out.println("Round: " + round + " Duration = " + (System.currentTimeMillis() - startTime ) + "ms");
+                startTime = System.currentTimeMillis();
             }
 
             Map<Integer, Integer> decisions = new HashMap<>();
